@@ -9,7 +9,7 @@ const vec3 deplace= vec3(3,7,1);  // declare une constante
  
 void main( )
 {
-    gl_Position= mvpMatrix*vec4( positions[gl_VertexID] + deplace * time / 1000.0, 1.0 );
+    gl_Position= mvpMatrix*vec4( positions[gl_VertexID] + deplace *  cos(time*50) / 10.0, 1.0 );
     // positions[gl_VertexID] est un vec3 + vec3 * float / float, ce qui donne bien un vec3
     // et le vec3 est complete par une valeur pour etre affecte a un vec4
 }
@@ -19,13 +19,11 @@ void main( )
 
 
 out vec4 fragment_color;
-in vec4 vertex_color;  
-
 
 void main()
 {
 
-    fragment_color = vertex_color;
+    fragment_color = vec4(position, 1.0);
 
 
 }

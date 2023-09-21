@@ -115,10 +115,10 @@ int ViewerEtudiant::init()
 {
     Viewer::init();
     Point pmin, pmax;
-    m_terrain.bounds(pmin, pmax);
-    //  m_camera.lookat(pmin, pmax);
+    m_cube.bounds(pmin, pmax);
+      m_camera.lookat(pmin, pmax);
     
-    m_camera.lookat( Point(0,0,0), 150 );
+    //m_camera.lookat( Point(0,0,0), 150 );
     
     m_program= read_program("data/shaders/gradient.glsl");
 
@@ -140,8 +140,8 @@ int ViewerEtudiant::init()
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
-      ViewerEtudiant:: init_terrain(m_terrainAlti);
-      //ViewerEtudiant::init_cube();
+      //ViewerEtudiant:: init_terrain(m_terrainAlti);
+      ViewerEtudiant::init_cube();
     
     
     
@@ -169,7 +169,7 @@ int ViewerEtudiant:: quit( )
         // etape 3 : detruire le shader program
         release_program(m_program);
 
-        m_terrain.release();
+        m_cube.release();
         glDeleteTextures(1, &m_texture);
         
         return 0;
@@ -196,7 +196,7 @@ int ViewerEtudiant::render()
         // . recuperer les transformations
         // Transform model= RotationX(global_time() / 20);
         //
-        Transform model=  Translation(-12,0,-12);
+        Transform model=  Scale(2,2,2);
         Transform view= m_camera.view();
         Transform projection= m_camera.projection(window_width(), window_height(), 45);
         
@@ -210,12 +210,12 @@ int ViewerEtudiant::render()
         
         // . parametres "supplementaires" :
         //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
-         program_uniform(m_program, "color", vec4(1, 1, 0, 1));
+        //  program_uniform(m_program, "color", vec4(1, 1, 0, 1));
         // ou program_uniform(m_program, "color", Color(1, 1, 0, 1));
         
         // go !
         //m_cube.color(vec4(1, 1, 0, 1));
-        m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
+        m_cube.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
 
     
     return 1;

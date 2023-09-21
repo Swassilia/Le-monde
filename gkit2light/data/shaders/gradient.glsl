@@ -17,7 +17,7 @@ void main( )
 #endif
 #ifdef FRAGMENT_SHADER
 
-
+in vec3 position;
 out vec4 fragment_color;
 
 void main()

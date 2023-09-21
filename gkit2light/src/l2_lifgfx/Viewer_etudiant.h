@@ -31,6 +31,7 @@ protected:
     GLuint m_terrain_texture;
     GLuint m_program;
     GLuint m_texture;
+    GLuint vao;
 
     
     

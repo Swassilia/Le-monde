@@ -2,28 +2,30 @@
 
 #ifdef VERTEX_SHADER
 layout(location= 0) in vec3 position;
-
+uniform vec3 positions[36];     // declare un uniform, un tableau de vec3
+uniform float time;             // declare un uniform, time de type float
 uniform mat4 mvpMatrix;
-varying float h;
+const vec3 deplace= vec3(3,7,1);  // declare une constante
+ 
 void main( )
 {
-    
-    h = position.y;
-    gl_Position=  mvpMatrix*vec4(position, 1.0);
+    gl_Position= mvpMatrix*vec4( positions[gl_VertexID] + deplace * time / 1000.0, 1.0 );
+    // positions[gl_VertexID] est un vec3 + vec3 * float / float, ce qui donne bien un vec3
+    // et le vec3 est complete par une valeur pour etre affecte a un vec4
 }
 
 #endif
 #ifdef FRAGMENT_SHADER
 
-out vec4 fragment_color;
 
-varying float h;
+out vec4 fragment_color;
+in vec4 vertex_color;  
+
 
 void main()
 {
-     float f = (h + 100.) / 200.;
-    f = clamp(f, 0., 1.);
-    gl_FragColor = vec4(mix(vec3(0.0, 0, 0), vec3( 255.0, 0.0, 120.0 / 255.0), f), 1.0);
+
+    fragment_color = vertex_color;
 
 
 }

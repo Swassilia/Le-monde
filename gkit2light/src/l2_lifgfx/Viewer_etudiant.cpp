@@ -115,16 +115,19 @@ int ViewerEtudiant::init()
 {
     Viewer::init();
     Point pmin, pmax;
-    m_cube.bounds(pmin, pmax);
+    m_terrain.bounds(pmin, pmax);
     //  m_camera.lookat(pmin, pmax);
     
     m_camera.lookat( Point(0,0,0), 150 );
     
-    m_program= read_program("tutos/tuto5GL.glsl");
+    m_program= read_program("data/shaders/gradient.glsl");
+
      program_print_errors(m_program);
         
         // etat openGL par defaut
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);        // couleur par defaut de la fenetre
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
         
         glClearDepth(1.f);                          // profondeur par defaut
         glDepthFunc(GL_LESS);                       // ztest, conserver l'intersection la plus proche de la camera
@@ -137,8 +140,8 @@ int ViewerEtudiant::init()
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
-//   :   ViewerEtudiant:: init_terrain(m_terrainAlti);
-      ViewerEtudiant::init_cube();
+      ViewerEtudiant:: init_terrain(m_terrainAlti);
+      //ViewerEtudiant::init_cube();
     
     
     
@@ -166,7 +169,7 @@ int ViewerEtudiant:: quit( )
         // etape 3 : detruire le shader program
         release_program(m_program);
 
-        m_cube.release();
+        m_terrain.release();
         glDeleteTextures(1, &m_texture);
         
         return 0;
@@ -192,8 +195,8 @@ int ViewerEtudiant::render()
         // configurer le shader program
         // . recuperer les transformations
         // Transform model= RotationX(global_time() / 20);
-        // Translation(-12,0,-12)*Scale(0.5/4,4,0.5/4);
-        Transform model= Identity();
+        //
+        Transform model=  Translation(-12,0,-12);
         Transform view= m_camera.view();
         Transform projection= m_camera.projection(window_width(), window_height(), 45);
         
@@ -203,14 +206,16 @@ int ViewerEtudiant::render()
         // . parametrer le shader program :
         //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
         program_uniform(m_program, "mvpMatrix", mvp);
+        program_uniform(m_program,"time" , float(global_time()));
         
         // . parametres "supplementaires" :
         //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
-        // program_uniform(m_program, "color", vec4(1, 1, 0, 1));
+         program_uniform(m_program, "color", vec4(1, 1, 0, 1));
         // ou program_uniform(m_program, "color", Color(1, 1, 0, 1));
         
         // go !
-        m_cube.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
+        //m_cube.color(vec4(1, 1, 0, 1));
+        m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
 
     
     return 1;

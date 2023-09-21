@@ -1,6 +1,38 @@
 question a poser aou autre ou se le note ici 
 
 
+
+
+shader vertex pour l'animation du nuage 
+calcule de position 
+
+ frag shader
+shader  color tout court pour la couleur du nuage 
+
+shader ligth pour l'interaction de la couleur du nuage avec la lumiere 
+calcule de couleur + calcule d'interaction avec la lumiere 
+
+noise / bruit de perlin 
+
+
+vec4 gl_Position pour un vertex shader, et vec4 gl_FragColor pour un fragment shader.
+
+	// vertex shader de tuto3GL
+	#version 330
+	 
+	uniform vec3 positions[36];     // declare un uniform, un tableau de vec3
+	uniform float time;             // declare un uniform, time de type float
+	 
+	const vec3 deplace= vec3(...);  // declare une constante
+	 
+	void main( )
+	{
+	    gl_Position= vec4( positions[gl_VertexID] + deplace * time / 1000.0, 1.0 );
+	    // positions[gl_VertexID] est un vec3 + vec3 * float / float, ce qui donne bien un vec3
+	    // et le vec3 est complete par une valeur pour etre affecte a un vec4
+	}
+
+
 code a essayer ( juste un,, shader de bleu turquoise )
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {

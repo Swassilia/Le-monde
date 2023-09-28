@@ -142,7 +142,7 @@ int ViewerEtudiant::init()
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
-      ViewerEtudiant:: init_terrain(m_terrainAlti);
+    //ViewerEtudiant:: init_terrain(m_terrainAlti);
       ViewerEtudiant::init_cube();
     
     
@@ -198,7 +198,7 @@ int ViewerEtudiant::render()
         // . recuperer les transformations
         // Transform model= RotationX(global_time() / 20);
         //
-        Transform model=  Scale(2,2,2);
+        Transform model=  Translation(2,2,2);
         Transform view= m_camera.view();
         Transform projection= m_camera.projection(window_width(), window_height(), 45);
         

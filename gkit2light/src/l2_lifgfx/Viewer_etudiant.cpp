@@ -116,11 +116,13 @@ int ViewerEtudiant::init()
     Viewer::init();
     Point pmin, pmax;
     m_cube.bounds(pmin, pmax);
-      m_camera.lookat(pmin, pmax);
+    //m_camera.lookat(pmin, pmax);
     
-    //m_camera.lookat( Point(0,0,0), 150 );
+    m_camera.lookat( Point(0,0,0), 150 );
     
     m_program= read_program("data/shaders/gradient.glsl");
+    // m_program= read_program("tutos/tuto9_color.glsl");
+
 
      program_print_errors(m_program);
         
@@ -140,7 +142,7 @@ int ViewerEtudiant::init()
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
-      //ViewerEtudiant:: init_terrain(m_terrainAlti);
+      ViewerEtudiant:: init_terrain(m_terrainAlti);
       ViewerEtudiant::init_cube();
     
     
@@ -202,11 +204,52 @@ int ViewerEtudiant::render()
         
         // . composer les transformations : model, view et projection
         Transform mvp= projection * view * model;
+        // Les positions des sommets du cube
+    vec3 cubeVertices[36] = {
+        // Face avant
+        vec3(-1, -1, 1),
+        vec3(1, -1, 1),
+        vec3(1, 1, 1),
+        vec3(-1, 1, 1),
+
+        // Face arrière
+        vec3(-1, -1, -1),
+        vec3(1, -1, -1),
+        vec3(1, 1, -1),
+        vec3(-1, 1, -1),
+
+    // Autres Faces
+        vec3(1, -1, 1),
+        vec3(1, -1, -1),
+        vec3(1, 1, -1),
+        vec3(1, 1, 1),
+
+        vec3(-1, -1, 1),
+        vec3(-1, -1, -1),
+        vec3(-1, 1, -1),
+        vec3(-1, 1, 1),
+
+        vec3(-1, -1, 1),
+        vec3(1, -1, 1),
+        vec3(1, -1, -1),
+        vec3(-1, -1, -1),
+
+        vec3(-1, 1, 1),
+        vec3(1, 1, 1),
+        vec3(1, 1, -1),
+        vec3(-1, 1, -1)
+    // ... Vous pouvez ajouter les positions des sommets des autres faces ici
+};
+
+// Initialiser le tableau positions avec les positions des sommets du cube
+
         
         // . parametrer le shader program :
         //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
         program_uniform(m_program, "mvpMatrix", mvp);
+        program_uniform(m_program, "positions", cubeVertices[36]);
         program_uniform(m_program,"time" , float(global_time()));
+
         
         // . parametres "supplementaires" :
         //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
@@ -215,8 +258,9 @@ int ViewerEtudiant::render()
         
         // go !
         //m_cube.color(vec4(1, 1, 0, 1));
-        m_cube.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
-
+        m_cube.draw(m_program, /* use position */ true, /* use texcoord */ false, /* use normal */ false, /* use color */ false, /* use material index*/ false);
+        // draw_cube(model);
+        // draw_terrain(model);
     
     return 1;
     

@@ -118,9 +118,9 @@ int ViewerEtudiant::init()
     m_cube.bounds(pmin, pmax);
     //m_camera.lookat(pmin, pmax);
     
-    m_camera.lookat( Point(0,0,0), 150 );
+    m_camera.lookat( Point(0,0,0), 15 );
     
-    m_program= read_program("data/shaders/gradient.glsl");
+     m_program= read_program("data/shaders/gradient.glsl");
     // m_program= read_program("tutos/tuto9_color.glsl");
 
 
@@ -159,7 +159,7 @@ void ViewerEtudiant::draw_terrain(const Transform &T){
 
 void ViewerEtudiant::draw_cube(const Transform& T)
 {
-    // gl.model(T*Scale(0.5,0.5,0.5));
+    // gl.model(T*Translation(0.5,0.5,0.5));
     gl.model(T);
    // gl.texture(tex);
     //gl.lighting(false);
@@ -198,48 +198,14 @@ int ViewerEtudiant::render()
         // . recuperer les transformations
         // Transform model= RotationX(global_time() / 20);
         //
-        Transform model=  Translation(2,2,2);
+        Transform model=  Scale(2,2,2);
         Transform view= m_camera.view();
         Transform projection= m_camera.projection(window_width(), window_height(), 45);
         
         // . composer les transformations : model, view et projection
         Transform mvp= projection * view * model;
-        // Les positions des sommets du cube
-    vec3 cubeVertices[36] = {
-        // Face avant
-        vec3(-1, -1, 1),
-        vec3(1, -1, 1),
-        vec3(1, 1, 1),
-        vec3(-1, 1, 1),
 
-        // Face arrière
-        vec3(-1, -1, -1),
-        vec3(1, -1, -1),
-        vec3(1, 1, -1),
-        vec3(-1, 1, -1),
-
-    // Autres Faces
-        vec3(1, -1, 1),
-        vec3(1, -1, -1),
-        vec3(1, 1, -1),
-        vec3(1, 1, 1),
-
-        vec3(-1, -1, 1),
-        vec3(-1, -1, -1),
-        vec3(-1, 1, -1),
-        vec3(-1, 1, 1),
-
-        vec3(-1, -1, 1),
-        vec3(1, -1, 1),
-        vec3(1, -1, -1),
-        vec3(-1, -1, -1),
-
-        vec3(-1, 1, 1),
-        vec3(1, 1, 1),
-        vec3(1, 1, -1),
-        vec3(-1, 1, -1)
-    // ... Vous pouvez ajouter les positions des sommets des autres faces ici
-};
+//  
 
 // Initialiser le tableau positions avec les positions des sommets du cube
 
@@ -247,8 +213,14 @@ int ViewerEtudiant::render()
         // . parametrer le shader program :
         //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
         program_uniform(m_program, "mvpMatrix", mvp);
-        program_uniform(m_program, "positions", cubeVertices[36]);
+        // program_uniform(m_program, "positions", cubeVertices[36]);
         program_uniform(m_program,"time" , float(global_time()));
+        
+        //iniitialisation de l'uniforme position
+        GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
+        glUniform3fv(positionsLocation, m_cube.vertex_count(), m_cube.vertex_buffer());
+
+
 
         
         // . parametres "supplementaires" :

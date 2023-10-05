@@ -26,12 +26,15 @@ protected:
      Mesh m_l;
      Mesh cube_nuage;
      Mesh m_cube;
+     Mesh m_sphere;
+     Mesh m_cylindre;
     
     /// Declaration des Textures
     GLuint m_terrain_texture;
     GLuint m_program;
     GLuint m_texture;
     GLuint vao;
+    GLuint vertex_buffer;
 
     
     
@@ -39,6 +42,8 @@ protected:
     void init_terrain(const Image& im);
     void init_cube();
     void init_cubeN();
+    void init_sphere();
+    void init_cylindre();
 
     
     /// Declaration des fonctions draw_votreObjet(const Transform& T)

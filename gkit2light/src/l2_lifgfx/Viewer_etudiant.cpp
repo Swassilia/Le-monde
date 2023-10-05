@@ -9,6 +9,7 @@
 #include "Viewer_etudiant.h"
 
 using namespace std;
+int vertex_count;
 
 static int CreatShader(const string & vertexShader , const string & fragment );
 
@@ -103,10 +104,55 @@ void ViewerEtudiant::init_terrain(const Image& im){
 }
 
 
-void ViewerEtudiant:: init_cubeN()
-{
+void ViewerEtudiant::init_sphere(){
+    const int divBeta = 16;
+    const int divAlpha = 20;
+    int i,j;
+    float beta,alpha,alpha2;
 
+    m_sphere = Mesh(GL_TRIANGLE_STRIP);
+
+    for(int i=0; i<=divAlpha;i++){
+        alpha = -0.5f * M_PI +float (i)*M_PI/divAlpha;
+        alpha2 = -0.5f * M_PI +float (i+1)*M_PI/divAlpha;
+
+        for(int j=0;j<=divBeta;j++){
+        beta = float(j) * 2.f*M_PI/(divBeta);
+    
+
+        m_sphere.normal(Vector(cos(alpha)*cos(beta), sin(alpha), cos(alpha)*sin(beta)));
+        m_sphere.texcoord(float(beta)/float(2.f*M_PI), float(0.5+alpha)/float(M_PI));
+        m_sphere.vertex(Point(cos(alpha)*cos(beta), sin(alpha), cos(alpha)*sin(beta)));
+
+        m_sphere.normal(Vector(cos(alpha2)*cos(beta), sin(alpha2), cos(alpha2)*sin(beta)));
+        m_sphere.texcoord(float(beta)/float(2.f*M_PI), float(0.5+alpha2)/float(M_PI));
+        m_sphere.vertex(Point(cos(alpha2)*cos(beta), sin(alpha2), cos(alpha2)*sin(beta)));
+        }
+        m_sphere.restart_strip();
+    }
+    
 }
+void ViewerEtudiant::init_cylindre(){
+    int i;
+    const int div = 25;
+    float alpha;
+    float step = 2.0*M_PI/(div);
+
+    m_cylindre = Mesh(GL_TRIANGLE_STRIP);
+    //m_cylindre.color(Color(0,0,0));
+    for(int i=0;i<= div; ++i){
+        alpha = i*step;
+
+        m_cylindre.normal(Vector(cos(alpha),0,sin(alpha)));
+        m_cylindre.vertex(Point(cos(alpha),-1,sin(alpha)));
+        m_cylindre.texcoord(float(i)/div,0);
+
+        m_cylindre.normal(Vector(cos(alpha),0,sin(alpha)));
+        m_cylindre.vertex(Point(cos(alpha),1,sin(alpha)));
+        m_cylindre.texcoord(float(i)/div,1);
+    }
+}
+
 
 /*
  * Fonction dans laquelle les initialisations sont faites.
@@ -115,16 +161,46 @@ int ViewerEtudiant::init()
 {
     Viewer::init();
     Point pmin, pmax;
-    m_cube.bounds(pmin, pmax);
+    m_terrain.bounds(pmin, pmax);
     //m_camera.lookat(pmin, pmax);
+     m_terrainAlti = read_image("data/terrain/Clipboard01.png");
+
+    ViewerEtudiant:: init_terrain(m_terrainAlti);
     
     m_camera.lookat( Point(0,0,0), 15 );
-    
      m_program= read_program("data/shaders/gradient.glsl");
-    // m_program= read_program("tutos/tuto9_color.glsl");
+    // m_program= read_program("tutos/tuto4GL.glsl");
+    vertex_count=m_terrain.vertex_count();
+    cout<<endl;
+    cout<<"vertex count : "<<vertex_count<<endl;
 
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER,
+        /* length */    m_terrain.vertex_buffer_size(),
+        /* data */      m_terrain.vertex_buffer(),
+        /* usage */     GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 
      program_print_errors(m_program);
+    
+    GLint attribute= glGetAttribLocation(m_program, "position");
+    if(attribute < 0)
+       { // gros probleme...
+       cout<< "oh non"<<endl;
+        return -1;}
+
+        glVertexAttribPointer(attribute, 3, GL_FLOAT,       // l'attribut est un vec3,
+        /* not normalized */    GL_FALSE,               // les valeurs ne sont pas normalisees entre 0, et 1
+        /* stride */            0,                      // les vec3 sont ranges les uns a la suite des autres
+        /* offset */            0);                     // et se trouvent au debut du buffer
+
+    glEnableVertexAttribArray(attribute);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
         
         // etat openGL par defaut
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);        // couleur par defaut de la fenetre
@@ -137,22 +213,22 @@ int ViewerEtudiant::init()
 
     
     /// Chargement des textures
-    m_terrainAlti = read_image("data/terrain/Clipboard01.png");
-    m_terrain_texture = read_texture(0, smart_path("data/terrain/Clipboard01_texture.png"));
+    // m_terrain_texture = read_texture(0, smart_path("data/terrain/Clipboard01_texture.png"));
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
-    //ViewerEtudiant:: init_terrain(m_terrainAlti);
-      ViewerEtudiant::init_cube();
+    //   ViewerEtudiant::init_cube();
+    //   ViewerEtudiant::init_cylindre();
     
     
     
     return 0;
+
 }
 //----------------------------------------------------Fonction draw-------------------------------------------------//
 void ViewerEtudiant::draw_terrain(const Transform &T){
 
-    gl.model(T*Translation(5,0.5,5));
+    gl.model(T);
     gl.draw(m_terrain);
     gl.texture(m_terrain_texture);
 }
@@ -170,8 +246,9 @@ int ViewerEtudiant:: quit( )
     {
         // etape 3 : detruire le shader program
         release_program(m_program);
-
-        m_cube.release();
+        glDeleteBuffers(1, &vertex_buffer);
+        glDeleteVertexArrays(1, &vao);
+        m_terrain.release();
         glDeleteTextures(1, &m_texture);
         
         return 0;
@@ -186,10 +263,15 @@ int ViewerEtudiant::render()
 
     gl.camera(m_camera);
     
-    // /// Transform
-    Transform T_terrain;
-    T_terrain=Translation(-12,0,-12)*Scale(0.5/4,4,0.5/4);
-    
+    glBindVertexArray(vao);
+
+    glUseProgram(m_program);
+    // vec3 positions[]
+    //  for (const auto& vertex : meshVertices) {
+    //     // Ajoutez les coordonnées du vertex au tableau des positions
+    //     positions.push_back(m_terrain.vertex.x);
+    //     positions.push_back(vertex.y);
+    //     // positions.push_back(vertex.z);
         // etape 2 : dessiner m_objet avec le shader program
         // configurer le pipeline 
         glUseProgram(m_program);
@@ -197,8 +279,9 @@ int ViewerEtudiant::render()
         // configurer le shader program
         // . recuperer les transformations
         // Transform model= RotationX(global_time() / 20);
-        //
-        Transform model=  Scale(2,2,2);
+        // Transform model=  Scale(0.5/4,4,0.5/4);
+        
+        Transform model=  Scale(0.5/4,4,0.5/4)*Translation(5,0,5);
         Transform view= m_camera.view();
         Transform projection= m_camera.projection(window_width(), window_height(), 45);
         
@@ -213,12 +296,13 @@ int ViewerEtudiant::render()
         // . parametrer le shader program :
         //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
         program_uniform(m_program, "mvpMatrix", mvp);
-        // program_uniform(m_program, "positions", cubeVertices[36]);
         program_uniform(m_program,"time" , float(global_time()));
         
         //iniitialisation de l'uniforme position
-        GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
-        glUniform3fv(positionsLocation, m_cube.vertex_count(), m_cube.vertex_buffer());
+        // GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
+        // glUniform3fv(positionsLocation, m_cylindre.vertex_count(), m_cylindre.vertex_buffer());
+        // glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
 
 
 
@@ -226,13 +310,17 @@ int ViewerEtudiant::render()
         // . parametres "supplementaires" :
         //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
         //  program_uniform(m_program, "color", vec4(1, 1, 0, 1));
-        // ou program_uniform(m_program, "color", Color(1, 1, 0, 1));
+        program_uniform(m_program, "color", Color(1, 0.3, 0, 1));
         
         // go !
         //m_cube.color(vec4(1, 1, 0, 1));
-        m_cube.draw(m_program, /* use position */ true, /* use texcoord */ false, /* use normal */ false, /* use color */ false, /* use material index*/ false);
-        // draw_cube(model);
-        // draw_terrain(model);
+        glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
+        m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ false, /* use normal */ false, /* use color */ false, /* use material index*/ false);
+        // draw_cube(model)
+        glUseProgram(0);
+    glBindVertexArray(0);
+        //  draw_terrain(T_terrain);
     
     return 1;
     

@@ -163,7 +163,7 @@ int ViewerEtudiant::init()
     Point pmin, pmax;
     m_terrain.bounds(pmin, pmax);
     //m_camera.lookat(pmin, pmax);
-     m_terrainAlti = read_image("data/terrain/Clipboard01.png");
+     m_terrainAlti = read_image("data/terrain/image_originel.png");
 
     ViewerEtudiant:: init_terrain(m_terrainAlti);
     
@@ -213,7 +213,7 @@ int ViewerEtudiant::init()
 
     
     /// Chargement des textures
-    // m_terrain_texture = read_texture(0, smart_path("data/terrain/Clipboard01_texture.png"));
+     m_terrain_texture = read_texture(0, smart_path("data/terrain/Clipboard01_texture.png"));
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
@@ -274,14 +274,14 @@ int ViewerEtudiant::render()
     //     // positions.push_back(vertex.z);
         // etape 2 : dessiner m_objet avec le shader program
         // configurer le pipeline 
-        glUseProgram(m_program);
+        // glUseProgram(m_program);
 
         // configurer le shader program
         // . recuperer les transformations
         // Transform model= RotationX(global_time() / 20);
         // Transform model=  Scale(0.5/4,4,0.5/4);
         
-        Transform model=  Scale(0.5/4,4,0.5/4)*Translation(5,0,5);
+        Transform model=  Scale(0.5,1,0.5);
         Transform view= m_camera.view();
         Transform projection= m_camera.projection(window_width(), window_height(), 45);
         
@@ -303,9 +303,6 @@ int ViewerEtudiant::render()
         // glUniform3fv(positionsLocation, m_cylindre.vertex_count(), m_cylindre.vertex_buffer());
         // glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
-
-
-
         
         // . parametres "supplementaires" :
         //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
@@ -313,19 +310,16 @@ int ViewerEtudiant::render()
         program_uniform(m_program, "color", Color(1, 0.3, 0, 1));
         
         // go !
-        //m_cube.color(vec4(1, 1, 0, 1));
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-
-        m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ false, /* use normal */ false, /* use color */ false, /* use material index*/ false);
-        // draw_cube(model)
+        //draw_terrain(model);
+        m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ false, /* use color */ false, /* use material index*/ false);
         glUseProgram(0);
-    glBindVertexArray(0);
-        //  draw_terrain(T_terrain);
+        glBindVertexArray(0);
     
     return 1;
     
 }
-
+// void ViewerEtudiant::update_ter
 
 /*
  * Fonction dans laquelle les mises a jours sont effectuees.
@@ -334,7 +328,6 @@ int ViewerEtudiant::update( const float time, const float delta )
 {
     // time est le temps ecoule depuis le demarrage de l'application, en millisecondes,
     // delta est le temps ecoule depuis l'affichage de la derniere image / le dernier appel a draw(), en millisecondes.
-    
     
     
     return 0;

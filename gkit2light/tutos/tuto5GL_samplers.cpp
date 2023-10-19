@@ -119,7 +119,7 @@ int init( )
 
     glTexImage2D(GL_TEXTURE_2D, 0,
         GL_RGBA, image.width, image.height, 0,
-        data_format, data_type, image.buffer() );
+        data_format, data_type, image.data() );
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -197,7 +197,7 @@ int draw( )
     glBindSampler(0, sampler);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    // sampler2D déclare par le fragment shader
+    // sampler2D dï¿½clare par le fragment shader
     GLint location= glGetUniformLocation(program, "texture0");
     glUniform1i(location, 0);
     // ou program_uniform(program, "texture0", 0);

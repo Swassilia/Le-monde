@@ -50,6 +50,7 @@ protected:
     void draw_terrain(const Transform &T);
     void draw_cube(const Transform &T);
     void draw_cubeN(const Transform &T);
+    // void update_te (float time);
 
     
 };

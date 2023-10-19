@@ -160,25 +160,30 @@ void ViewerEtudiant::init_cylindre(){
 int ViewerEtudiant::init()
 {
     Viewer::init();
+    // ViewerEtudiant::init_cube();
+
     Point pmin, pmax;
     m_terrain.bounds(pmin, pmax);
     //m_camera.lookat(pmin, pmax);
      m_terrainAlti = read_image("data/terrain/image_originel.png");
 
-    ViewerEtudiant:: init_terrain(m_terrainAlti);
+     ViewerEtudiant:: init_terrain(m_terrainAlti);
     
     m_camera.lookat( Point(0,0,0), 15 );
-     m_program= read_program("data/shaders/gradient.glsl");
+    //  m_program= read_program("data/shaders/gradient.glsl");
     // m_program= read_program("tutos/tuto4GL.glsl");
+    m_program= read_program("data/shaders/trac2.glsl");
+
     vertex_count=m_terrain.vertex_count();
     cout<<endl;
     cout<<"vertex count : "<<vertex_count<<endl;
+    vec3 positions [vertex_count];
 
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER,
-        /* length */    m_terrain.vertex_buffer_size(),
-        /* data */      m_terrain.vertex_buffer(),
+        /* length */    sizeof(positions),
+        /* data */      positions,
         /* usage */     GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &vao);
@@ -217,7 +222,6 @@ int ViewerEtudiant::init()
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
-    //   ViewerEtudiant::init_cube();
     //   ViewerEtudiant::init_cylindre();
     
     
@@ -297,10 +301,12 @@ int ViewerEtudiant::render()
         //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
         program_uniform(m_program, "mvpMatrix", mvp);
         program_uniform(m_program,"time" , float(global_time()));
+        program_uniform(m_program,"scale", 2);
+        program_uniform(m_program,"frequency", float(rand()%30));
         
         //iniitialisation de l'uniforme position
-        // GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
-        // glUniform3fv(positionsLocation, m_cylindre.vertex_count(), m_cylindre.vertex_buffer());
+        GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
+        glUniform3fv(positionsLocation, vertex_count, m_terrain.vertex_buffer());
         // glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
         

@@ -282,17 +282,19 @@
          program_uniform(program, "projectionInvMatrix", projection.inverse());
          program_uniform(program, "viewportMatrix", viewport);
          program_uniform(program, "viewportInvMatrix", viewport.inverse());
-         
+        //  program_uniform(program,"time", float(global_time()));
+        //  program_uniform(program, "frequency", float(rand()%3));
          program_uniform(program, "mvpMatrix", mvp);
          program_uniform(program, "mvpInvMatrix", mvpInv);
-         
+         program_uniform(program, "scale", 1);
          program_uniform(program, "mvMatrix", mv);
          program_uniform(program, "mvInvMatrix", mv.inverse());
          program_uniform(program, "normalMatrix", mv.normal());
+
          
          // interactions
          program_uniform(program, "viewport", vec2(window_width(), window_height()));
-         program_uniform(program, "time", time);
+          program_uniform(program, "time", time);
          program_uniform(program, "motion", vec3(mx, my, mb & SDL_BUTTON(1)));
          program_uniform(program, "mouse", vec3(mousex, window_height() - mousey -1, mb & SDL_BUTTON(1)));
          

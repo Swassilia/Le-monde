@@ -1,5 +1,6 @@
 
-//! \file tuto_storage_buffer.cpp  exemple direct d'utilisation d'un storage buffer.  le vertex shader recupere les attributs des sommets dans un storage buffer sans utiliser de vao.
+//! \file tuto_storage_buffer.cpp  exemple direct d'utilisation d'un storage buffer.  le vertex shader recupere les attributs des sommets dans un 
+//storage buffer sans utiliser de vao.
 
 #include "app.h"
 

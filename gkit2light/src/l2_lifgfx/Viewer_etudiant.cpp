@@ -303,6 +303,7 @@ int ViewerEtudiant::render()
         program_uniform(m_program,"time" , float(global_time()));
         program_uniform(m_program,"scale", 2);
         program_uniform(m_program,"frequency", float(rand()%30));
+        program_uniform(m_program,"nbvert", vertex_count);
         
         //iniitialisation de l'uniforme position
         GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
@@ -313,7 +314,6 @@ int ViewerEtudiant::render()
         // . parametres "supplementaires" :
         //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
         //  program_uniform(m_program, "color", vec4(1, 1, 0, 1));
-        program_uniform(m_program, "color", Color(1, 0.3, 0, 1));
         
         // go !
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);

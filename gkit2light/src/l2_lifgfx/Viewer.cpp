@@ -189,7 +189,7 @@ int Viewer::init()
     
     /// Camera et lumiere
     m_camera.lookat( Point(0,0,0), 30 );
-    gl.light( Point(0, 20, 20), White() );
+    gl.light( Point(0, 2, 20), White() );
     //gl.light( Point(-2, 2, 2), White() );
     
     

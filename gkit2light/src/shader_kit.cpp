@@ -1,6 +1,6 @@
  #include <cstdio>
  #include <cstring>
-  
+ #include <iostream>
  #include <chrono>
   
  #include "glcore.h"
@@ -21,7 +21,7 @@
  #include "text.h"
  #include "widgets.h"
   
-  
+using namespace std;
   
  // program
  const char *program_filename;
@@ -101,7 +101,7 @@
      vao= 0;
      mesh_pmin= Point(normalize(Vector(-1, -1, 0)) * 2.5f);
      mesh_pmax= Point(normalize(Vector( 1,  1, 0)) * 2.5f);
-     
+     cout<<mesh_pmax.y<<" "<<mesh_pmin.y<<endl;
      option= option_find(options, ".obj");
      if(option != nullptr)
      {
@@ -282,8 +282,8 @@
          program_uniform(program, "projectionInvMatrix", projection.inverse());
          program_uniform(program, "viewportMatrix", viewport);
          program_uniform(program, "viewportInvMatrix", viewport.inverse());
-        //  program_uniform(program,"time", float(global_time()));
-        //  program_uniform(program, "frequency", float(rand()%3));
+         program_uniform(program,"time", float(global_time()));
+         program_uniform(program, "frequency", float(rand()%3));
          program_uniform(program, "mvpMatrix", mvp);
          program_uniform(program, "mvpInvMatrix", mvpInv);
          program_uniform(program, "scale", 1);
@@ -294,7 +294,7 @@
          
          // interactions
          program_uniform(program, "viewport", vec2(window_width(), window_height()));
-          program_uniform(program, "time", time);
+        //   program_uniform(program, "time", time);
          program_uniform(program, "motion", vec3(mx, my, mb & SDL_BUTTON(1)));
          program_uniform(program, "mouse", vec3(mousex, window_height() - mousey -1, mb & SDL_BUTTON(1)));
          

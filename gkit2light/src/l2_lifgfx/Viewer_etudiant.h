@@ -35,6 +35,8 @@ protected:
     GLuint m_texture;
     GLuint vao;
     GLuint vertex_buffer;
+    GLuint texcoord_buffer;
+    GLuint  sampler;
 
     
     

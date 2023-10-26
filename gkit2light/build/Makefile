@@ -12,6 +12,7 @@ PROJECTS := l2_lifgfx
 
 all: $(PROJECTS)
 
+
 l2_lifgfx: 
 	@echo "==== Building l2_lifgfx ($(config)) ===="
 	@${MAKE} --no-print-directory -C . -f l2_lifgfx.make

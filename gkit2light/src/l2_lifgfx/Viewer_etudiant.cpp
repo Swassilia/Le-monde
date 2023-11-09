@@ -160,7 +160,7 @@ void ViewerEtudiant::init_cylindre(){
 int ViewerEtudiant::init()
 {
     Viewer::init();
-     //ViewerEtudiant::init_cube();
+     ViewerEtudiant::init_cube();
 
     Point pmin, pmax;
     m_terrain.bounds(pmin, pmax);
@@ -224,11 +224,11 @@ int ViewerEtudiant::init()
      glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
      glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
      glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-     m_terrain_texture = read_texture(0, smart_path("data/terrain/Clipboard01_texture.png"));
+     m_terrain_texture = read_texture(0, smart_path("data/terrain/image_originel.png"));
      glBindTexture(GL_TEXTURE_2D, 0);
      glUseProgram(0);
 
-
+    
         
         // etat openGL par defaut
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);        // couleur par defaut de la fenetre
@@ -237,7 +237,8 @@ int ViewerEtudiant::init()
         
         glClearDepth(1.f);                          // profondeur par defaut
         glDepthFunc(GL_LESS);                       // ztest, conserver l'intersection la plus proche de la camera
-        glEnable(GL_DEPTH_TEST);   
+        glEnable(GL_DEPTH_TEST);  
+        glEnable( GL_BLEND ); 
 
     
     /// Chargement des textures
@@ -278,68 +279,66 @@ int ViewerEtudiant::render()
     glBindVertexArray(vao);
 
     glUseProgram(m_program);
-    // vec3 positions[]
-    //  for (const auto& vertex : meshVertices) {
-    //     // Ajoutez les coordonnées du vertex au tableau des positions
-    //     positions.push_back(m_terrain.vertex.x);
-    //     positions.push_back(vertex.y);
-    //     // positions.push_back(vertex.z);
-        // etape 2 : dessiner m_objet avec le shader program
-        // configurer le pipeline 
-        // glUseProgram(m_program);
-
-        // configurer le shader program
-        // . recuperer les transformations
-        // Transform model= RotationX(global_time() / 20);
-        // Transform model=  Scale(0.5/4,4,0.5/4);
-        
-        // Transform model=  Scale(0.5,1,0.5)*Translation(-10,-1,-10);
-        Transform model=  Identity();
-        Transform view= m_camera.view();
-        Transform projection= m_camera.projection(window_width(), window_height(), 45);
-        
-        // . composer les transformations : model, view et projection
-        Transform mvp= projection * view * model;
-         glActiveTexture(GL_TEXTURE0);
-     glBindTexture(GL_TEXTURE_2D, m_terrain_texture);
-     glBindSampler(0, sampler);
+   
+    // configurer le shader program
+    // . recuperer les transformations
+    // Transform model= RotationX(global_time() / 20);
+    // Transform model=  Scale(0.5/4,4,0.5/4);
+    
+    Transform model=  Scale(0.5,1,0.5)*Translation(-10,-1,-10);
+    // Transform model=  Identity();
+    Transform view= m_camera.view();
+    Transform projection= m_camera.projection(window_width(), window_height(), 45);
+    
+    // . composer les transformations : model, view et projection
+    Transform mvp= projection * view * model;
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_terrain_texture);
+    glBindSampler(0, sampler);
 
 //  
 
 // Initialiser le tableau positions avec les positions des sommets du cube
 
-        
-        // . parametrer le shader program :
-        //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
-        program_uniform(m_program, "mvpMatrix", mvp);
-        program_uniform(m_program,"time" , float(global_time()));
-        program_uniform(m_program,"scale", 2);
-        program_uniform(m_program,"frequency", float(rand()%30));
-        
-        //initialisation de l'uniforme position
-        GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
-        glUniform3fv(positionsLocation, vertex_count, m_cube.vertex_buffer());
-        GLint location;
-        location= glGetUniformLocation(m_program, "terrain");
-        glUniform1i(location, 0);
-    
 
+    vec3 lightCol(1,1,1);
+    // . parametrer le shader program :
+    //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
+    program_uniform(m_program, "mvpMatrix", mvp);
+    program_uniform(m_program, "model", model);
+
+    program_uniform(m_program,"time" , float(global_time()));
+    program_uniform(m_program,"scale", 2);
+    program_uniform(m_program,"frequency", float(rand()%30));
+    
+    
+    //initialisation de l'uniforme position
+    GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
+    glUniform3fv(positionsLocation, vertex_count, m_terrain.vertex_buffer());
+    GLint location;
+    location= glGetUniformLocation(m_program, "terrain");
+    glUniform1i(location, 0);
+    GLuint poslight=glGetUniformLocation(m_program, "lightCol");
+    glUniform3f(poslight,lightCol.x,lightCol.y,lightCol.z);
+    // GLuint lightColorLocation=glGetUniformLocation(m_program, "FragPos");
+    // glUniform3f(lightColorLocation,lightcolor.x,lightcolor.y,lightcolor.z);
+
+
+    
+    // . parametres "supplementaires" :
+    //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
+    //  program_uniform(m_program, "color", vec4(1, 1, 0, 1));
+    
+    // go !
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+    //draw_terrain(model);
+    m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
+        glBindTexture(GL_TEXTURE_2D, 0);
         
-        // . parametres "supplementaires" :
-        //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
-        //  program_uniform(m_program, "color", vec4(1, 1, 0, 1));
-        
-        // go !
-        glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-        //draw_terrain(model);
-        m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
-         glBindTexture(GL_TEXTURE_2D, 0);
-         glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-        glBindSampler(0, 0);
-        glUseProgram(0);
-        glBindVertexArray(0);
-        
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glBindSampler(0, 0);
+    glUseProgram(0);
+    glBindVertexArray(0);
     return 1;
     
 }

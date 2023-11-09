@@ -160,12 +160,13 @@ void ViewerEtudiant::init_cylindre(){
 int ViewerEtudiant::init()
 {
     Viewer::init();
-     ViewerEtudiant::init_cube();
+     //ViewerEtudiant::init_cube();
 
     Point pmin, pmax;
     m_terrain.bounds(pmin, pmax);
     m_camera.lookat(pmin, pmax);
     m_terrainAlti = read_image("data/terrain/image_originel.png");
+    m_terrain_texture = read_texture(0, smart_path("data/terrain/image_originel.png"));
 
      ViewerEtudiant:: init_terrain(m_terrainAlti);
     
@@ -175,6 +176,7 @@ int ViewerEtudiant::init()
     m_program= read_program("data/shaders/trac2.glsl");
 
     vertex_count=m_terrain.vertex_count();
+    // int vertex_countcu=m_cube.vertex_count();
     cout<<endl;
     cout<<"vertex count : "<<vertex_count<<endl;
     vec3 positions [vertex_count];
@@ -224,7 +226,6 @@ int ViewerEtudiant::init()
      glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
      glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
      glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-     m_terrain_texture = read_texture(0, smart_path("data/terrain/image_originel.png"));
      glBindTexture(GL_TEXTURE_2D, 0);
      glUseProgram(0);
 
@@ -241,14 +242,7 @@ int ViewerEtudiant::init()
         glEnable( GL_BLEND ); 
 
     
-    /// Chargement des textures
-     
-    
-    
-    /// Appel des fonctions init_votreObjet pour creer les Mesh
-    //   ViewerEtudiant::init_cylindre();
-    
-    
+
     
     return 0;
 
@@ -262,6 +256,8 @@ int ViewerEtudiant:: quit( )
         glDeleteBuffers(1, &vertex_buffer);
         glDeleteVertexArrays(1, &vao);
         m_terrain.release();
+        // m_cube.release();
+
         glDeleteTextures(1, &m_texture);
         
         return 0;
@@ -286,6 +282,7 @@ int ViewerEtudiant::render()
     // Transform model=  Scale(0.5/4,4,0.5/4);
     
     Transform model=  Scale(0.5,1,0.5)*Translation(-10,-1,-10);
+    // Transform modl=  Scale(0.5,1,0.5)*Translation(-10,-10,-10);
     // Transform model=  Identity();
     Transform view= m_camera.view();
     Transform projection= m_camera.projection(window_width(), window_height(), 45);
@@ -301,7 +298,7 @@ int ViewerEtudiant::render()
 // Initialiser le tableau positions avec les positions des sommets du cube
 
 
-    vec3 lightCol(1,1,1);
+    vec3 lightCol(1,6,1);
     // . parametrer le shader program :
     //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
     program_uniform(m_program, "mvpMatrix", mvp);
@@ -333,6 +330,10 @@ int ViewerEtudiant::render()
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     //draw_terrain(model);
     m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
+    
+    // program_uniform(m_program, "model", modl);
+
+    // m_cube.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
         glBindTexture(GL_TEXTURE_2D, 0);
         
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

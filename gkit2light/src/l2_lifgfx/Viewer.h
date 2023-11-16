@@ -15,7 +15,7 @@
 #include "app.h"
 
 #include "AnimationCurve.h"
-#include "pacman_core/Jeu.h"
+
 
 
 
@@ -51,8 +51,6 @@ protected:
     /// Trajectoire pour l animation
     AnimationCurve m_anim;
     
-    /// Pacman
-    Jeu m_pacman;
     
     /// Booleens pour choix du type d affichage
     bool mb_cullface;

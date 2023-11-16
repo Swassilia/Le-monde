@@ -204,10 +204,6 @@ int Viewer::init()
    // m_cube_texture = read_texture(0, smart_path("data/debug2x2red.png")) ;
     //m_quad_texture = read_texture(0, smart_path("data/papillon.png") );
 
-    //m_tex_mur = read_texture(0, smart_path("data/mur.png")) ;
-    //m_tex_pacman = read_texture(0, smart_path("data/pacman.png")) ;;
-    //m_tex_fantome = read_texture(0, smart_path("data/fantome.png")) ;;
-    //m_tex_pastille = read_texture(0, smart_path("data/pastille.png")) ;;
     
     return 0;
 }
@@ -217,24 +213,7 @@ int Viewer::init()
 
  * Fonction d affichage du pacman.
  */
-void Viewer::draw_pacman(const Transform& T)
-{
-    int i,j;
-    draw_cube( T*Translation( m_pacman.getConstPacman().getX(),m_pacman.getConstPacman().getY(),0), m_tex_pacman);
-    draw_cube( T*Translation( m_pacman.getConstFantome().getX(),m_pacman.getConstFantome().getY(),0), m_tex_fantome);
 
-    for(i=0;i<m_pacman.getTerrain().getDimX();++i)
-        for(j=0;j<m_pacman.getTerrain().getDimY();++j)
-        {
-            if (m_pacman.getTerrain().getXY(i,j)=='#')
-                draw_cube( T*Translation(i,j,0), m_tex_mur);
-            else
-            if (m_pacman.getTerrain().getXY(i,j)=='.')
-                draw_cube( T*Translation(i,j,0), m_tex_pastille);
-            //else
-//                draw_cube( T*Translation(i,j,0), 0);
-        }
-}
 
 
 /*
@@ -299,13 +278,7 @@ int Viewer::update( const float time, const float delta )
 {
     // Tquad = Translation( 3, 5, 0 ) * Rotation( Vector(0,0,1), 0.1f*time);
 
-    // // Jeu du pacman
-    // m_pacman.actionsAutomatiques();
-    
-    // if (key_state(SDLK_RIGHT) && key_state(SDLK_LALT)) m_pacman.actionClavier('d');
-    // if (key_state(SDLK_LEFT) && key_state(SDLK_LALT)) m_pacman.actionClavier('g');
-    // if (key_state(SDLK_UP) && key_state(SDLK_LALT)) m_pacman.actionClavier('h');
-    // if (key_state(SDLK_DOWN) && key_state(SDLK_LALT)) m_pacman.actionClavier('b');
+
 
     return 1;
 }

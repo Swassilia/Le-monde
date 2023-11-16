@@ -15,18 +15,22 @@ out vec2 intexcoord;
 out vec3 inormal;
 out vec3 FragPos;
 in vec2 texcoord;
+vec3 lightPosi()
+{
+    return(vec3(0, -3, 0));
+}
 void main()
 {
 
     vec4 pos=vec4(position, 1);
     intexcoord=texcoord;
         //vec4 dis = vec4(3.3*scale,positions[gl_VertexID].y +frequency/ 10.0,0.8, 1.0);
-	    pos = pos+vec4(cos(texcoord.x*frequency)/time,cos(texcoord.y*frequency)/frequency,0,0);
+	    pos = pos+vec4(cos(texcoord.x*200*time)/5,cos(texcoord.y*200*time)/5,0,0);
 
     
 	
 	gl_Position =mvpMatrix*pos;
-    FragPos = vec3(pos);
+    FragPos = lightPosi();
     inormal=normal;
  
 }
@@ -37,7 +41,6 @@ void main()
 uniform float time;
 
 
-
 uniform sampler2D terrain;
 in vec2 intexcoord;
 in vec3 FragPos; 
@@ -45,8 +48,6 @@ uniform vec3 lightCol;
 out vec4 fragment_color;
 in vec3 inormal;
 
-// layout(location=2)in vec3 normal;    // Normale du fragment
-// in vec3 position;  // Position du fragment
 
 
 vec4 colorOpacity(sampler2D ni)
@@ -56,12 +57,13 @@ vec4 colorOpacity(sampler2D ni)
     
     return color;
 }
+
 void main()
 {
     vec3 lightPos = vec3 (0,1000,0);
     vec3 norm =normalize(inormal);
-    vec3 objectColor=vec3 (1,1,1);
-    float ambientStrength = 0.1;
+    vec3 objectColor=vec3 (0,0.6,1);
+    float ambientStrength = 0.8;
     vec3 ambient = ambientStrength * lightCol ;
     vec3 lightDir = normalize(lightPos-FragPos);
     float diff = max(dot(norm, lightDir), 0.0);

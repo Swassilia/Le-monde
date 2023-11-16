@@ -133,10 +133,7 @@ OBJECTS := \
 	$(OBJDIR)/AnimationCurve.o \
 	$(OBJDIR)/Viewer.o \
 	$(OBJDIR)/Viewer_etudiant.o \
-	$(OBJDIR)/Fantome.o \
-	$(OBJDIR)/Jeu.o \
-	$(OBJDIR)/Pacman.o \
-	$(OBJDIR)/Terrain.o \
+
 
 RESOURCES := \
 
@@ -296,21 +293,6 @@ $(OBJDIR)/Viewer_etudiant.o: ../src/l2_lifgfx/Viewer_etudiant.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/Fantome.o: ../src/l2_lifgfx/pacman_core/Fantome.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
-
-$(OBJDIR)/Jeu.o: ../src/l2_lifgfx/pacman_core/Jeu.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
-
-$(OBJDIR)/Pacman.o: ../src/l2_lifgfx/pacman_core/Pacman.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
-
-$(OBJDIR)/Terrain.o: ../src/l2_lifgfx/pacman_core/Terrain.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
 ifneq (,$(PCH))

@@ -163,19 +163,18 @@ int ViewerEtudiant::init()
      ViewerEtudiant::init_cube();
 
     Point pmin, pmax;
-    m_cube.bounds(pmin, pmax);
+    m_terrain.bounds(pmin, pmax);
     m_terrainAlti = read_image("data/terrain/image_originel.png");
     m_terrain_texture = read_texture(0, smart_path("data/terrain/image_originel.png"));
 
      ViewerEtudiant:: init_terrain(m_terrainAlti);
     
-     m_camera.lookat( Point(0,0,0), 15 );
+     m_camera.lookat( Point(2,5,3), 15 );
     //  m_program= read_program("data/shaders/gradient.glsl");
     // m_program= read_program("tutos/tuto4GL.glsl");
     m_program= read_program("data/shaders/trac2.glsl");
 
-    vertex_count=m_cube.vertex_count();
-    // int vertex_countcu=m_cube.vertex_count();
+    vertex_count=m_terrain.vertex_count();
     cout<<endl;
     cout<<"vertex count : "<<vertex_count<<endl;
     vec3 positions [vertex_count];
@@ -210,7 +209,7 @@ int ViewerEtudiant::init()
          // texcoord buffer
      glGenBuffers(1, &texcoord_buffer);
      glBindBuffer(GL_ARRAY_BUFFER, texcoord_buffer);
-     glBufferData(GL_ARRAY_BUFFER, m_cube.texcoord_buffer_size(), m_cube.texcoord_buffer(), GL_STATIC_DRAW);
+     glBufferData(GL_ARRAY_BUFFER, m_terrain.texcoord_buffer_size(), m_terrain.texcoord_buffer(), GL_STATIC_DRAW);
   
      // configurer l'attribut texcoord
      GLint texcoord= glGetAttribLocation(m_program, "texcoord");
@@ -254,8 +253,7 @@ int ViewerEtudiant:: quit( )
         release_program(m_program);
         glDeleteBuffers(1, &vertex_buffer);
         glDeleteVertexArrays(1, &vao);
-        m_cube.release();
-        // m_cube.release();
+        m_terrain.release();
 
         glDeleteTextures(1, &m_texture);
         
@@ -310,7 +308,7 @@ int ViewerEtudiant::render()
     
     //initialisation de l'uniforme position
     GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
-    glUniform3fv(positionsLocation, vertex_count, m_cube.vertex_buffer());
+    glUniform3fv(positionsLocation, vertex_count, m_terrain.vertex_buffer());
     GLint location;
     location= glGetUniformLocation(m_program, "terrain");
     glUniform1i(location, 0);
@@ -328,7 +326,7 @@ int ViewerEtudiant::render()
     // go !
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     //draw_terrain(model);
-    m_cube.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
+    m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
     
     // program_uniform(m_program, "model", modl);
 
@@ -355,7 +353,8 @@ int ViewerEtudiant::update( const float time, const float delta )
     // time est le temps ecoule depuis le demarrage de l'application, en millisecondes,
     // delta est le temps ecoule depuis l'affichage de la derniere image / le dernier appel a draw(), en millisecondes.
     // m_camera.read_orbiter("data/animation/anim.ani");
-    m_camera.move(cos(time));
+    m_camera.rotation(3, 0);
+    
     return 0;
 }
 

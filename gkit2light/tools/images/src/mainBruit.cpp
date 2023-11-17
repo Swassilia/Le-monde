@@ -10,10 +10,10 @@ int main (int argc, char** argv) {
     for(int h=0;h<10;h++){
     Image r0_0(4,4);
     r0_0.bruit();
-    r0_0.sauver("./data/terrain/image_source.png");
+    r0_0.sauver("../../data/terrain/image_source.png");
     Image r_0(32,32);
     r_0.aggrandissement( r0_0 );
-    r_0.sauver("./data/terrain/image_source_aggrandit.png");
+    r_0.sauver("../../data/terrain/image_source_aggrandit.png");
 
     Image r0_01(8,8);
     r0_01.bruit();
@@ -38,7 +38,7 @@ int main (int argc, char** argv) {
     Image final(32,32);
     
     final.concat(r_0,r_01,r_1,r_2);
-    final.sauver("./data/terrain/final"+std::to_string(h)+".png"); 
+    final.sauver("../../data/terrain/final"+std::to_string(h)+".png"); 
     }
     
     /*int const taille_base = 4;

@@ -164,8 +164,9 @@ int ViewerEtudiant::init()
 
     Point pmin, pmax;
     m_terrain.bounds(pmin, pmax);
-    m_terrainAlti = read_image("data/terrain/image_originel.png");
-    m_terrain_texture = read_texture(0, smart_path("data/terrain/image_originel.png"));
+    int a = rand()%10 ;
+    m_terrainAlti = read_image("data/terrain/final9.png");
+    m_terrain_texture = read_texture(0, smart_path("data/terrain/final9.png"));
 
      ViewerEtudiant:: init_terrain(m_terrainAlti);
     
@@ -295,17 +296,17 @@ int ViewerEtudiant::render()
 // Initialiser le tableau positions avec les positions des sommets du cube
 
 
-    vec3 lightCol(1,1,1);
+    vec3 lightCol= vec3(1.0,1.0,1.0);
     // . parametrer le shader program :
     //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
     program_uniform(m_program, "mvpMatrix", mvp);
     program_uniform(m_program, "model", model);
-
+    program_uniform(m_program, "view",view);
     program_uniform(m_program,"time" , float(global_time()));
     program_uniform(m_program,"scale", 2);
     program_uniform(m_program,"frequency", float(rand()%30));
     
-    
+   
     //initialisation de l'uniforme position
     GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
     glUniform3fv(positionsLocation, vertex_count, m_terrain.vertex_buffer());
@@ -353,7 +354,7 @@ int ViewerEtudiant::update( const float time, const float delta )
     // time est le temps ecoule depuis le demarrage de l'application, en millisecondes,
     // delta est le temps ecoule depuis l'affichage de la derniere image / le dernier appel a draw(), en millisecondes.
     // m_camera.read_orbiter("data/animation/anim.ani");
-    m_camera.rotation(3, 0);
+    //m_camera.rotation(3, 0);
     
     return 0;
 }

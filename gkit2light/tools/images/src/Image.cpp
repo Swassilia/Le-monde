@@ -255,15 +255,15 @@ void Image::format(const Image im, const unsigned int taille) {
   interpolation(multiple, taille);
 }
 */
-void Image::concat(const Image& im1, const Image& im2, const Image& im3,
-                   const Image& im4) {
+void Image::concat(const Image& im4, const Image& im1, const Image& im2,
+                   const Image& im3) {
   for (unsigned int i = 0; i < dimx; i++) {
     for (unsigned int j = 0; j < dimy; j++) {
       unsigned char rouge =
-          (unsigned char)(((int)im4.getPix(i, j).getRouge() * 0.50 +
-                           (int)im1.getPix(i, j).getRouge() * 0.10 +
-                           (int)im2.getPix(i, j).getRouge() * 0.15 +
-                           (int)im3.getPix(i, j).getRouge() * 0.25));
+          (unsigned char)(((int)im4.getPix(i, j).getRouge() * 0.85 +
+                           (int)im1.getPix(i, j).getRouge() * 0.08 +
+                           (int)im2.getPix(i, j).getRouge() * 0.045 +
+                           (int)im3.getPix(i, j).getRouge() * 0.025));
       // unsigned char bleu = (unsigned
       // char)(((int)im4.getPix(i,j).getBleu()+(int)im1.getPix(i,j).getBleu()+(int)im2.getPix(i,j).getBleu()+(int)im3.getPix(i,j).getBleu())/4);
       // unsigned char vert = (unsigned

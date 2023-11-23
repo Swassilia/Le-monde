@@ -165,8 +165,8 @@ int ViewerEtudiant::init()
     Point pmin, pmax;
     m_terrain.bounds(pmin, pmax);
     int a = rand()%10 ;
-    m_terrainAlti = read_image("data/terrain/final9.png");
-    m_terrain_texture = read_texture(0, smart_path("data/terrain/final9.png"));
+    m_terrainAlti = read_image("data/terrain/final5.png");
+    m_terrain_texture = read_texture(0, smart_path("data/terrain/final5.png"));
 
      ViewerEtudiant:: init_terrain(m_terrainAlti);
     

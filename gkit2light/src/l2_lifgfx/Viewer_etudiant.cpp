@@ -38,53 +38,6 @@ Vector terrainNormal(const Image& im, const int i, const int j){
 
 /*-------------------------------------------fonction Init-------------------------------------*/
 
-void ViewerEtudiant::init_cube()
-{
-    std::cout<<"init_cube"<<std::endl;
-
-    
-    //       4---5
-    //      /|  /|
-    //     7---6 |
-    //     | 0-|-1
-    //     |/  |/
-    //     3---2
-    
-    
-    // Sommets                     0           1           2       3           4           5       6           7
-    static float pt[8][3] = { {-1,-1,-1}, {1,-1,-1}, {1,-1,1}, {-1,-1,1}, {-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1} };
-    
-    // Faces                    0         1           2           3          4         5
-    static int f[6][4] = { {0,1,2,3}, {5,4,7,6}, {2,1,5,6}, {0,3,7,4}, {3,2,6,7}, {1,0,4,5} };
-    
-    // Normales
-    static float n[6][3] = { {0,-1,0}, {0,1,0}, {1,0,0}, {-1,0,0}, {0,0,1}, {0,0,-1} };
-    
-    int i;
-
-    m_cube = Mesh(GL_TRIANGLE_STRIP);
-    m_cube.color( Color(1, 1, 1) );
-    
-    // Parcours des 6 faces
-    for (i=0;i<6;i++)
-    {
-        m_cube.normal(n[i][0], n[i][1], n[i][2]);
-
-        m_cube.texcoord(0,0);
-        m_cube.vertex( pt[ f[i][0] ][0], pt[ f[i][0] ][1], pt[ f[i][0] ][2] );
-
-        m_cube.texcoord(1,0);
-        m_cube.vertex( pt[ f[i][1] ][0], pt[ f[i][1] ][1], pt[ f[i][1] ][2] );
-
-        m_cube.texcoord(0,1);
-        m_cube.vertex(pt[ f[i][3] ][0], pt[ f[i][3] ][1], pt[ f[i][3] ][2] );
-        
-        m_cube.texcoord(1,1);
-        m_cube.vertex( pt[ f[i][2] ][0], pt[ f[i][2] ][1], pt[ f[i][2] ][2] );
-        m_cube.restart_strip();
-    }
-    
-}
 
 void ViewerEtudiant::init_terrain(const Image& im){
     m_terrain = Mesh(GL_TRIANGLE_STRIP);
@@ -104,55 +57,6 @@ void ViewerEtudiant::init_terrain(const Image& im){
 }
 
 
-void ViewerEtudiant::init_sphere(){
-    const int divBeta = 16;
-    const int divAlpha = 20;
-    int i,j;
-    float beta,alpha,alpha2;
-
-    m_sphere = Mesh(GL_TRIANGLE_STRIP);
-
-    for(int i=0; i<=divAlpha;i++){
-        alpha = -0.5f * M_PI +float (i)*M_PI/divAlpha;
-        alpha2 = -0.5f * M_PI +float (i+1)*M_PI/divAlpha;
-
-        for(int j=0;j<=divBeta;j++){
-        beta = float(j) * 2.f*M_PI/(divBeta);
-    
-
-        m_sphere.normal(Vector(cos(alpha)*cos(beta), sin(alpha), cos(alpha)*sin(beta)));
-        m_sphere.texcoord(float(beta)/float(2.f*M_PI), float(0.5+alpha)/float(M_PI));
-        m_sphere.vertex(Point(cos(alpha)*cos(beta), sin(alpha), cos(alpha)*sin(beta)));
-
-        m_sphere.normal(Vector(cos(alpha2)*cos(beta), sin(alpha2), cos(alpha2)*sin(beta)));
-        m_sphere.texcoord(float(beta)/float(2.f*M_PI), float(0.5+alpha2)/float(M_PI));
-        m_sphere.vertex(Point(cos(alpha2)*cos(beta), sin(alpha2), cos(alpha2)*sin(beta)));
-        }
-        m_sphere.restart_strip();
-    }
-    
-}
-void ViewerEtudiant::init_cylindre(){
-    int i;
-    const int div = 25;
-    float alpha;
-    float step = 2.0*M_PI/(div);
-
-    m_cylindre = Mesh(GL_TRIANGLE_STRIP);
-    //m_cylindre.color(Color(0,0,0));
-    for(int i=0;i<= div; ++i){
-        alpha = i*step;
-
-        m_cylindre.normal(Vector(cos(alpha),0,sin(alpha)));
-        m_cylindre.vertex(Point(cos(alpha),-1,sin(alpha)));
-        m_cylindre.texcoord(float(i)/div,0);
-
-        m_cylindre.normal(Vector(cos(alpha),0,sin(alpha)));
-        m_cylindre.vertex(Point(cos(alpha),1,sin(alpha)));
-        m_cylindre.texcoord(float(i)/div,1);
-    }
-}
-
 
 /*
  * Fonction dans laquelle les initialisations sont faites.
@@ -160,7 +64,7 @@ void ViewerEtudiant::init_cylindre(){
 int ViewerEtudiant::init()
 {
     Viewer::init();
-     ViewerEtudiant::init_cube();
+    
 
     Point pmin, pmax;
     m_terrain.bounds(pmin, pmax);
@@ -171,26 +75,24 @@ int ViewerEtudiant::init()
      ViewerEtudiant:: init_terrain(m_terrainAlti);
     
      m_camera.lookat( Point(2,5,3), 15 );
-    //  m_program= read_program("data/shaders/gradient.glsl");
-    // m_program= read_program("tutos/tuto4GL.glsl");
     m_program= read_program("data/shaders/trac2.glsl");
 
     vertex_count=m_terrain.vertex_count();
     cout<<endl;
     cout<<"vertex count : "<<vertex_count<<endl;
-    vec3 positions [vertex_count];
+    // vec3 positions [vertex_count];
 
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER,
-        /* length */    sizeof(positions),
-        /* data */      positions,
-        /* usage */     GL_STATIC_DRAW);
+    // glGenBuffers(1, &vertex_buffer);
+    // glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    // glBufferData(GL_ARRAY_BUFFER,
+    //     /* length */    sizeof(positions),
+    //     /* data */      positions,
+    //     /* usage */     GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-     program_print_errors(m_program);
+    program_print_errors(m_program);
     
     GLint attribute= glGetAttribLocation(m_program, "position");
     if(attribute < 0)
@@ -276,12 +178,9 @@ int ViewerEtudiant::render()
    
     // configurer le shader program
     // . recuperer les transformations
-    // Transform model= RotationX(global_time() / 20);
-    // Transform model=  Scale(0.5/4,4,0.5/4);
+
     
-    Transform model=  Scale(0.5,1,0.5)*Translation(-10,-1,-10);
-    // Transform modl=  Scale(0.5,1,0.5)*Translation(-10,-10,-10);
-    // Transform model=  Identity();
+    Transform model=  Scale(1,1.5,1)*Translation(-10,-1,-10);
     Transform view= m_camera.view();
     Transform projection= m_camera.projection(window_width(), window_height(), 45);
     
@@ -298,7 +197,7 @@ int ViewerEtudiant::render()
 
     vec3 lightCol= vec3(1.0,1.0,1.0);
     // . parametrer le shader program :
-    //   . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
+    // . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
     program_uniform(m_program, "mvpMatrix", mvp);
     program_uniform(m_program, "model", model);
     program_uniform(m_program, "view",view);
@@ -308,8 +207,8 @@ int ViewerEtudiant::render()
     
    
     //initialisation de l'uniforme position
-    GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
-    glUniform3fv(positionsLocation, vertex_count, m_terrain.vertex_buffer());
+    // GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
+    // glUniform3fv(positionsLocation, vertex_count, m_terrain.vertex_buffer());
     GLint location;
     location= glGetUniformLocation(m_program, "terrain");
     glUniform1i(location, 0);
@@ -326,13 +225,8 @@ int ViewerEtudiant::render()
     
     // go !
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-    //draw_terrain(model);
     m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
-    
-    // program_uniform(m_program, "model", modl);
-
-    // m_cube.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
         
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glBindSampler(0, 0);
@@ -354,7 +248,8 @@ int ViewerEtudiant::update( const float time, const float delta )
     // time est le temps ecoule depuis le demarrage de l'application, en millisecondes,
     // delta est le temps ecoule depuis l'affichage de la derniere image / le dernier appel a draw(), en millisecondes.
     // m_camera.read_orbiter("data/animation/anim.ani");
-    //m_camera.rotation(3, 0);
+    // m_camera.rotation(3, 0);// rotation de la camera comme sur une sphere
+    
     
     return 0;
 }

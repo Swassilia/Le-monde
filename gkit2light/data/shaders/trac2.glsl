@@ -62,7 +62,7 @@ void main()
 {
     vec3 lightPos = vec3(0, 6.5, 0);
     vec3 norm = normalize(inormal);
-    vec3 objectColor = vec3(0.73, 0.4, 0);
+    vec3 objectColor = vec3(0.0, 0.4, 0.73);
     float ambientStrength = 2;
 
     float distance = length(lightPos - FragPos)*1;

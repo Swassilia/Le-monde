@@ -28,7 +28,7 @@ void main()
     vec4 pos = vec4(position, 1);
     intexcoord = texcoord;
     // pos = pos + vec4(0, cos(texcoord.y* 2.0 * (time/(300*3.14)))/5, 0, 0);
-    pos = pos + vec4(0, min(sin(texcoord.y* 2.0 * (time/(300*3.14+0.1)+0.1)/2) , cos(texcoord.y* 2.0 * (time/(300*3.14))+0.1)/2 )/2, 0, 0);
+    pos = pos + vec4(0, min(sin(texcoord.y* 2.0 * (time/(300*3.14+0.1)+0.1)/5) , cos(texcoord.y* 2.0 * (time/(300*3.14))+0.1)/5 )/5, 0, 0);
 
     gl_Position = mvpMatrix * pos;
     FragPos = vec3(0, 5, 0);
@@ -47,8 +47,8 @@ out vec4 fragment_color;
 in vec3 inormal;
 
 uniform vec3 view;               // Position de la caméra
-uniform vec3 specularColor = vec3(0.73, 0.4, 0); // Couleur spéculaire
-uniform float shininess = 90.0;     // Exposant de brillance
+uniform vec3 specularColor = vec3(0.23, 0.73, 0.9686); // Couleur spéculaire
+uniform float shininess = 10.0;     // Exposant de brillance
 
 vec4 colorOpacity(sampler2D ni)
 {
@@ -62,7 +62,7 @@ void main()
 {
     vec3 lightPos = vec3(0, 6.5, 0);
     vec3 norm = normalize(inormal);
-    vec3 objectColor = vec3(0.0, 0.4, 0.73);
+    vec3 objectColor = vec3(0.33, 0.9  , 0.90);
     float ambientStrength = 2;
 
     float distance = length(lightPos - FragPos)*1;

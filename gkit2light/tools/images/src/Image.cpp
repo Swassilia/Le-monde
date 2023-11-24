@@ -314,6 +314,23 @@ void Image::ovale() {
     }
 }
 
+void Image::ovaleInv(){
+  Pixel noir(0, 0, 0);
+
+    int rayonX = dimx / 8;  // Le rayon dans la direction horizontale
+    int rayonY = dimy / 4;  // Le rayon dans la direction verticale
+
+    for (int i = 0; i < dimx; i++) {
+        for (int j = 0; j < dimy; j++) {
+            // Équation de l'ovale elliptique : (x^2 / rayonX^2) + (y^2 / rayonY^2) <= 1
+            int equation = (i - dimx / 2) * (i - dimx / 2) * rayonY * rayonY + (j - dimy / 2) * (j - dimy / 2) * rayonX * rayonX;
+
+            if (!(equation <= rayonX * rayonX * rayonY * rayonY)) {
+                setPix(i, j, noir);
+            }
+        }
+    }
+}
 
 
 

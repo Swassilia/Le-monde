@@ -40,8 +40,15 @@ int main (int argc, char** argv) {
     final.concat(r_0,r_01,r_1,r_2);
     final.sauver("../../data/terrain/final"+std::to_string(h)+".png"); 
 
+    Image final2(256,256);
+    final2.aggrandissement(final);
+    final2.ovaleInv();
+    final2.sauver("../../data/terrain/final_oval_interieur.png");
+
     final.ovale();
     final.sauver("../../data/terrain/final_oval.png");
+
+
 
     }
 

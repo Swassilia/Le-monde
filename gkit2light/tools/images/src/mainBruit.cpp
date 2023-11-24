@@ -41,7 +41,7 @@ int main (int argc, char** argv) {
     final.sauver("../../data/terrain/final"+std::to_string(h)+".png"); 
 
     final.ovale();
-    final.sauver("../../data/terrain/final_oval"+std::to_string(h)+".png");
+    final.sauver("../../data/terrain/final_oval.png");
 
     }
 

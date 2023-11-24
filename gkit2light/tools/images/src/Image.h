@@ -147,6 +147,10 @@ class Image
           const Pixel getPixel(float a, float b) const;
 
           void aggrandissement( const Image& image_a_aggrandir);
+
+          void ovale();
+
+          void inverser();
      /* 
      @brief permet de copier en aggrandissant une image en format 1024 
      */

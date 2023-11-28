@@ -39,7 +39,16 @@ int main (int argc, char** argv) {
     
     final.concat(r_0,r_01,r_1,r_2);
     final.sauver("../../data/terrain/final"+std::to_string(h)+".png"); 
+
+    final.ovale();
+    final.sauver("../../data/terrain/final_oval.png");
+
     }
+
+    
+
+
+
     
     /*int const taille_base = 4;
     int i = 1;

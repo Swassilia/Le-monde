@@ -273,6 +273,50 @@ void Image::concat(const Image& im4, const Image& im1, const Image& im2,
   }
 }
 
+
+  void Image::inverser(){
+  Pixel blanc(255, 255, 255);
+  Pixel gris(169, 169, 169);
+  Pixel inverse_gris(255-169,255-169,255-169);
+  Pixel noir(1, 1, 1);
+  char val_coul;
+  for (unsigned int i = 0; i < dimx; i++) {
+    for (unsigned int j = 0; j < dimy; j++) {
+      val_coul = getPix(i, j).getRouge();
+      if (val_coul < 50) {
+        setPix(i, j, noir);
+      }
+      if ((val_coul > 100) && (val_coul < 150)) {
+        setPix(i, j, inverse_gris);
+      } else {
+        setPix(i, j, Pixel(255-val_coul, 255-val_coul, 255-val_coul));
+    }
+    }
+  }
+
+  }
+
+void Image::ovale() {
+    Pixel noir(0, 0, 0);
+
+    int rayonX = dimx / 8;  // Le rayon dans la direction horizontale
+    int rayonY = dimy / 4;  // Le rayon dans la direction verticale
+
+    for (int i = 0; i < dimx; i++) {
+        for (int j = 0; j < dimy; j++) {
+            // Équation de l'ovale elliptique : (x^2 / rayonX^2) + (y^2 / rayonY^2) <= 1
+            int equation = (i - dimx / 2) * (i - dimx / 2) * rayonY * rayonY + (j - dimy / 2) * (j - dimy / 2) * rayonX * rayonX;
+
+            if (equation <= rayonX * rayonX * rayonY * rayonY) {
+                setPix(i, j, noir);
+            }
+        }
+    }
+}
+
+
+
+
 Pixel &Image::getPix(const unsigned int x, const unsigned int y) const {
   assert(x < dimx);
   assert(y < dimy);

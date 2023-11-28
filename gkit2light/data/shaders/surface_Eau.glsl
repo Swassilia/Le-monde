@@ -27,8 +27,8 @@ void main()
 {
     vec4 pos = vec4(position, 1);
     intexcoord = texcoord;
-    // pos = pos + vec4(0, cos(texcoord.y* 2.0 * (time/(300*3.14)))/5, 0, 0);
-    pos = pos + vec4(0, min(sin(texcoord.y* 2.0 * (time/(300*3.14+0.1)+0.1)/5) , cos(texcoord.y* 2.0 * (time/(300*3.14))+0.1)/5 )/5, 0, 0);
+    float timePeriod = mod(time,10000000);
+    pos = pos + vec4(0, min(sin(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))) , cos(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))) )/7, 0, 0);
 
     gl_Position = mvpMatrix * pos;
     FragPos = vec3(0, 5, 0);
@@ -60,12 +60,12 @@ vec4 colorOpacity(sampler2D ni)
 
 void main()
 {
-    vec3 lightPos = vec3(0, 6.5, 0);
+    vec3 lightPos = vec3(0, 7, 0);
     vec3 norm = normalize(inormal);
     vec3 objectColor = vec3(0.33, 0.9  , 0.90);
     float ambientStrength = 2;
 
-    float distance = length(lightPos - FragPos)*1;
+    float distance = length(lightPos - FragPos)*0.75;
 
     float attenuation = 1.0 / (distance * distance + 0.1);
 

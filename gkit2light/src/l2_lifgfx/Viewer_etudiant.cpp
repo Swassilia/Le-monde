@@ -56,6 +56,39 @@ void ViewerEtudiant::init_terrain(const Image& im){
     }
 }
 
+void ViewerEtudiant::init_cube_map_Decor()
+{
+     m_cube_map_decor = Mesh(GL_TRIANGLE_STRIP); 
+
+    float pt2[8][3] = { {-1,-1,-1}, {1,-1,-1}, {1,-1,1}, {-1,-1,1}, {-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1} }; /// Tableau des coordonnées des 8 sommets
+
+    int f2[6][4] = { {0,1,2,3}, {5,4,7,6}, {2,1,5,6}, {0,3,7,4}, {3,2,6,7}, {1,0,4,5} }; /// Tableau des coordonnées des 6 faces
+
+    float n2[6][3] = { {0,1,0}, {0,-1,0}, {-1,0,0}, {1,0,0}, {0,0,-1}, {0,0,1} }; /// Tableau des 6 normales pour chaque faces
+
+    float tex[6][4] = {{0.25,0.5,0.33,0},{0.5,0.25,1,0.66}, {0.75,0.5,0.66,0.33}, {0.25,0,0.66,0.33}, {0.75,1,0.66,0.33},{0.5,0.25,0.66,0.33} };
+
+    for(int i=0; i<6; i++) /// Parcours des 6 faces
+    {
+            m_cube_map_decor.normal(n2[i][0], n2[i][1], n2[i][2]); 
+
+            m_cube_map_decor.texcoord(tex[i][0], tex[i][3]); // Coordonnées de la texture pour le sommet 0
+            m_cube_map_decor.vertex( pt2[ f2[i][0]][0], pt2[ f2[i][0]][1], pt2[ f2[i][0]][2] ); // Coordonnées en x,y,z du sommet 0 de la face i
+
+            m_cube_map_decor.texcoord(tex[i][0], tex[i][2]); // Coordonnées de la texture pour le sommet 3
+            m_cube_map_decor.vertex( pt2[ f2[i][3] ][0], pt2[ f2[i][3] ][1], pt2[ f2[i][3] ][2] ); // Coordonnées en x,y,z du sommet 3 de la face i
+
+            m_cube_map_decor.texcoord(tex[i][1], tex[i][3]); // Coordonnées de la texture pour le sommet 1
+            m_cube_map_decor.vertex( pt2[ f2[i][1] ][0], pt2[ f2[i][1] ][1], pt2[ f2[i][1] ][2] ); // Coordonnées en x,y,z du sommet 1 de la face i
+
+            m_cube_map_decor.texcoord(tex[i][1], tex[i][2]); // Coordonnées de la texture pour le sommet 2
+            m_cube_map_decor.vertex( pt2[ f2[i][2] ][0], pt2[ f2[i][2] ][1], pt2[ f2[i][2] ][2] ); // Coordonnées en x,y,z du sommet 2 de la face i
+
+            m_cube_map_decor.restart_strip();// Demande un nouveau strip
+        }
+
+}
+
 
 
 /*
@@ -67,15 +100,14 @@ int ViewerEtudiant::init()
     
 
     Point pmin, pmax;
-    m_terrain.bounds(pmin, pmax);
-    int a = rand()%10 ;
+    ViewerEtudiant:: init_cube_map_Decor();
     m_terrainAlti = read_image("data/terrain/final5.png");
     m_terrain_texture = read_texture(0, smart_path("data/terrain/final5.png"));
-
-     ViewerEtudiant:: init_terrain(m_terrainAlti);
+    m_texture_Decor=read_image("data/terrain/final5.png");
+    ViewerEtudiant:: init_terrain(m_terrainAlti);
     
      m_camera.lookat( Point(2,5,3), 15 );
-    m_program= read_program("data/shaders/trac2.glsl");
+    m_program_Eau= read_program("data/shaders/surface_Eau.glsl");
 
     vertex_count=m_terrain.vertex_count();
     cout<<endl;
@@ -92,9 +124,9 @@ int ViewerEtudiant::init()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    program_print_errors(m_program);
+    program_print_errors(m_program_Eau);
     
-    GLint attribute= glGetAttribLocation(m_program, "position");
+    GLint attribute= glGetAttribLocation(m_program_Eau, "position");
     if(attribute < 0)
        { // gros probleme...
        cout<< "oh non"<<endl;
@@ -115,7 +147,7 @@ int ViewerEtudiant::init()
      glBufferData(GL_ARRAY_BUFFER, m_terrain.texcoord_buffer_size(), m_terrain.texcoord_buffer(), GL_STATIC_DRAW);
   
      // configurer l'attribut texcoord
-     GLint texcoord= glGetAttribLocation(m_program, "texcoord");
+     GLint texcoord= glGetAttribLocation(m_program_Eau, "texcoord");
      if(texcoord < 0)
          return -1;
      glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
@@ -153,7 +185,7 @@ int ViewerEtudiant::init()
 int ViewerEtudiant:: quit( )
     {
         // etape 3 : detruire le shader program
-        release_program(m_program);
+        release_program(m_program_Eau);
         glDeleteBuffers(1, &vertex_buffer);
         glDeleteVertexArrays(1, &vao);
         m_terrain.release();
@@ -174,7 +206,7 @@ int ViewerEtudiant::render()
     
     glBindVertexArray(vao);
 
-    glUseProgram(m_program);
+    glUseProgram(m_program_Eau);
    
     // configurer le shader program
     // . recuperer les transformations
@@ -198,34 +230,28 @@ int ViewerEtudiant::render()
     vec3 lightCol= vec3(1.0,1.0,1.0);
     // . parametrer le shader program :
     // . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
-    program_uniform(m_program, "mvpMatrix", mvp);
-    program_uniform(m_program, "model", model);
-    program_uniform(m_program, "view",view);
-    program_uniform(m_program,"time" , float(global_time()));
-    program_uniform(m_program,"scale", 2);
-    program_uniform(m_program,"frequency", float(rand()%30));
+    program_uniform(m_program_Eau, "mvpMatrix", mvp);
+    program_uniform(m_program_Eau, "model", model);
+    program_uniform(m_program_Eau, "view",view);
+    program_uniform(m_program_Eau,"time" , float(global_time()));
+    program_uniform(m_program_Eau,"scale", 2);
+    program_uniform(m_program_Eau,"frequency", float(rand()%30));
     
    
     //initialisation de l'uniforme position
-    // GLuint positionsLocation = glGetUniformLocation(m_program, "positions");
-    // glUniform3fv(positionsLocation, vertex_count, m_terrain.vertex_buffer());
+    // GLuint positionsLocation = glGetUniformLocation(m_program_Eau, "positions");
+    // glUniform3fv(positionsLocation, vertex_count, m_terrrain.vertex_buffer());
     GLint location;
-    location= glGetUniformLocation(m_program, "terrain");
+    location= glGetUniformLocation(m_program_Eau, "terrain");
     glUniform1i(location, 0);
-    GLuint poslight=glGetUniformLocation(m_program, "lightCol");
+    GLuint poslight=glGetUniformLocation(m_program_Eau, "lightCol");
     glUniform3f(poslight,lightCol.x,lightCol.y,lightCol.z);
-    // GLuint lightColorLocation=glGetUniformLocation(m_program, "FragPos");
-    // glUniform3f(lightColorLocation,lightcolor.x,lightcolor.y,lightcolor.z);
 
 
-    
-    // . parametres "supplementaires" :
-    //   . couleur des pixels, cf la declaration 'uniform vec4 color;' dans le fragment shader
-    //  program_uniform(m_program, "color", vec4(1, 1, 0, 1));
     
     // go !
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-    m_terrain.draw(m_program, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
+    m_terrain.draw(m_program_Eau, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
     glBindTexture(GL_TEXTURE_2D, 0);
         
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

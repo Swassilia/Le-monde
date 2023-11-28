@@ -150,6 +150,8 @@ class Image
 
           void ovale();
 
+          void ovaleInv();
+
           void inverser();
      /* 
      @brief permet de copier en aggrandissant une image en format 1024 

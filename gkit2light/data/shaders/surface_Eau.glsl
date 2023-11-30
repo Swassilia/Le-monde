@@ -5,26 +5,19 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texcoord;
 layout(location = 2) in vec3 normal;
 
-
-
 uniform mat4 mvpMatrix;
 uniform float time;
 out vec2 intexcoord;
 out vec3 inormal;
 out vec3 FragPos;
 
-vec3 lightPosi()
-{
-    return vec3(-5, 5, -5);
-}
-
 void main()
 {
     vec4 pos = vec4(position, 1);
     intexcoord = texcoord;
     float timePeriod = mod(time,10000000);
-    pos = pos + vec4(0, min(sin(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))) , cos(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))) )/7, 0, 0);
-
+    pos = pos + vec4(0, min(sin(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))), 
+    cos(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))) )/7, 0, 0);
     gl_Position = mvpMatrix * pos;
     FragPos = vec3(0, 5, 0);
     inormal = normal;
@@ -42,23 +35,16 @@ out vec4 fragment_color;
 in vec3 inormal;
 
 uniform vec3 view;               // Position de la caméra
-uniform vec3 specularColor = vec3(0.23, 0.73, 0.9686); // Couleur spéculaire
+uniform vec3 specularColor = vec3(0.23, 0.73, 0.86); // Couleur spéculaire
 uniform float shininess = 10.0;     // Exposant de brillance
 
-vec4 colorOpacity(sampler2D ni)
-{
-    vec4 color = texture(ni, intexcoord);
-    color.a = 1;
-
-    return color;
-}
 
 void main()
 {
     vec3 lightPos = vec3(0, 7, 0);
     vec3 norm = normalize(inormal);
-    vec3 objectColor = vec3(0.33, 0.9  , 0.90);
-    float ambientStrength = 2;
+    vec3 objectColor = vec3(0.33, 0.9  , 0.90)*vec3(texture(terrain, intexcoord));
+    float ambientStrength =2.5;
 
     float distance = length(lightPos - FragPos)*0.75;
 
@@ -78,7 +64,7 @@ void main()
 
     vec3 result = (ambient + diffuse + specular) * objectColor;
 
-    fragment_color = colorOpacity(terrain) * vec4(result, 1.0);
+    fragment_color =  vec4(result, 1.0);
 }
 
 #endif

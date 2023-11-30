@@ -38,7 +38,7 @@ void main()
     vec3 lightPos = vec3(0, 7, 0);
     vec3 norm = normalize(inormal);
     vec3 objectColor = vec3(texture(decor,intexcoord));
-    float ambientStrength = 2;
+    float ambientStrength = 2.5;
 
     float distance = length(lightPos - FragPos)*0.75;
 

@@ -39,7 +39,7 @@ Vector terrainNormal(const Image& im, const int i, const int j){
 
 /*-------------------------------------------fonction Init-------------------------------------*/
 
-// Initialise un terrain ev
+// Initialise un terrain a partir d'une image pour un mesh en particulier
 void ViewerEtudiant::init_terrain(const Image& im, Mesh& m_Objet){
     m_Objet = Mesh(GL_TRIANGLE_STRIP);
 
@@ -100,8 +100,7 @@ int ViewerEtudiant::init()
     Viewer::init();
     
 
-    Point pmin, pmax;
-    // Appel des images qui serviront de texture et de modeler les objets
+    // Appel des images qui serviront de texture ou de modeler les objets
     m_surface_Alti = read_image("data/terrain/final5.png");
     m_surface_texture = read_texture(0, smart_path("data/terrain/final5.png"));
     m_terrainAlti= read_image("data/terrain/terrain.png");
@@ -117,6 +116,12 @@ int ViewerEtudiant::init()
     m_program_Eau= read_program("data/shaders/surface_Eau.glsl");
     m_program_Terrain= read_program("data/shaders/terrain.glsl");
     m_program_decor= read_program("data/shaders/cube_map.glsl");
+
+    //Appel d'un shader simple qui ne fait qu'afficher l'objet en gris 
+    // m_program_Eau= read_program("data/shaders/basic.glsl");
+    // m_program_Terrain= read_program("data/shaders/basic.glsl");
+    // m_program_decor= read_program("data/shaders/basic.glsl");
+    
 
 
     vertex_count_eau=m_surface_Eau.vertex_count();
@@ -137,19 +142,9 @@ int ViewerEtudiant::init()
     program_print_errors(m_program_Terrain);
     program_print_errors(m_program_decor);
 
-    lightCol= vec3(1.0,1.0,1.0);//configuration de la lumiere
-
-         // texcoord buffer
-     glGenBuffers(1, &texcoord_buffer);
-     glBindBuffer(GL_ARRAY_BUFFER, texcoord_buffer);
-     glBufferData(GL_ARRAY_BUFFER, m_surface_Eau.texcoord_buffer_size(), m_surface_Eau.texcoord_buffer(), GL_STATIC_DRAW);
-  
-     // configurer l'attribut texcoord
-     GLint texcoord= glGetAttribLocation(m_program_Eau, "texcoord");
-     if(texcoord < 0)
-         return -1;
-     glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
-     glEnableVertexAttribArray(texcoord);
+    //configuration de la lumiere
+    lightCol= vec3(1.0,1.0,1.0);
+    
     // configurer les samplers
     glGenSamplers(1, &sampler);
     glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -205,21 +200,17 @@ int ViewerEtudiant::render()
     
     glBindVertexArray(vao);
 
-   
-    
-   
     // configurer le shader program
-    // . recuperer les transformations
+    // recuperer les transformations
     Transform model=  Scale(1.2,2,1.2)*Translation(-15,-3.5,-15);
     Transform view= m_camera.view();
     Transform projection= m_camera.projection(window_width(), window_height(), 45);
     
-    // . composer les transformations : model, view et projection
+    // composer les transformations : model, view et projection
     Transform mvp= projection * view * model;
     
 
-    
-    //  parametrer le shader program m_program_Eau
+    // parametrer le shader program m_program_Eau
     glUseProgram(m_program_Eau);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_surface_texture);
@@ -232,7 +223,8 @@ int ViewerEtudiant::render()
     glUniform3f(poslight,lightCol.x,lightCol.y,lightCol.z);
 
     glDrawArrays(GL_TRIANGLES, 0, vertex_count_eau);
-    m_surface_Eau.draw(m_program_Eau, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
+    m_surface_Eau.draw(m_program_Eau, /* use position */ true, /* use texcoord */ true, /* use normal */ true, 
+    /* use color */ true, /* use material index*/ false);
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glBindSampler(0, 0);
     glUseProgram(0);
@@ -296,7 +288,6 @@ int ViewerEtudiant::update( const float time, const float delta )
     
     return 0;
 }
-
 
 /*
  * Constructeur.

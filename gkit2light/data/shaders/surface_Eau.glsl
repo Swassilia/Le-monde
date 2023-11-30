@@ -1,22 +1,17 @@
 #version 330
 #pragma debug(on)
-
 #ifdef VERTEX_SHADER
 layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texcoord;
 layout(location = 2) in vec3 normal;
 
 
 
-
-uniform mat4 model;
 uniform mat4 mvpMatrix;
-uniform float frequency;
 uniform float time;
 out vec2 intexcoord;
 out vec3 inormal;
 out vec3 FragPos;
-
-in vec2 texcoord;
 
 vec3 lightPosi()
 {

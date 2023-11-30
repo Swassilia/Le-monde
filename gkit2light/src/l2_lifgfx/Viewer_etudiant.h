@@ -19,35 +19,39 @@ public:
 protected:
     GLuint vao;
     Image m_terrainAlti;
+    
     Mesh m_terrain;
+    vec3 lightCol;//couleur de la lumiere
     
 
-    
-    /// Declaration des Mesh
      
      
     
     /// Declaration des Textures
     //Eau 
     Mesh m_surface_Eau;
-    GLuint m_terrain_texture;
+    Image m_surface_Alti;
+    GLuint m_surface_texture;
+
     GLuint m_program_Eau;
 
 
     //terrain
-    void init_terrain(const Image& im);
+    void init_terrain(const Image& im,Mesh &m_terrain);
+    GLuint m_terrain_texture;
     GLuint m_program_Terrain;
     GLuint m_texture;
     GLuint vertex_buffer;
     GLuint texcoord_buffer;
+
     GLuint  sampler;
-    GLuint Sampler_decor;
-    GLuint Sampler_eau;
+    GLuint sampler_decor;
+    GLuint sampler_eau;
     //decor
     void init_cube_map_Decor();
     Mesh m_cube_map_decor;
     Image m_Decor;
-    Image m_texture_Decor;
+    GLuint m_texture_Decor;
     GLuint m_program_decor;
 
 

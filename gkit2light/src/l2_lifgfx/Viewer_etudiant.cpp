@@ -9,13 +9,14 @@
 #include "Viewer_etudiant.h"
 
 using namespace std;
-int vertex_count;
+int vertex_count_eau;
+int vertex_count_ter, vertex_count_decor;
 
 static int CreatShader(const string & vertexShader , const string & fragment );
 
 
 
-
+// Calcul les normals de chaque vertices d'un image
 Vector terrainNormal(const Image& im, const int i, const int j){
     // Calcul de la normale au point (i,j) de l’image
     int ip = i-1;
@@ -38,21 +39,21 @@ Vector terrainNormal(const Image& im, const int i, const int j){
 
 /*-------------------------------------------fonction Init-------------------------------------*/
 
-
-void ViewerEtudiant::init_terrain(const Image& im){
-    m_terrain = Mesh(GL_TRIANGLE_STRIP);
+// Initialise un terrain ev
+void ViewerEtudiant::init_terrain(const Image& im, Mesh& m_Objet){
+    m_Objet = Mesh(GL_TRIANGLE_STRIP);
 
     for(int i=1;i<im.width()-2;++i){ // Boucle sur les i
         for(int j=1;j<im.height()-1;++j){ // Boucle sur les j
-            m_terrain.normal( terrainNormal(im, i+1, j) );
-            m_terrain.texcoord(float(i+1)/float(im.width()),float(j)/float(im.height()));
-            m_terrain.vertex( Point(i+1, 2.f*im(i+1, j).r, j) );
+            m_Objet.normal( terrainNormal(im, i+1, j) );
+            m_Objet.texcoord(float(i+1)/float(im.width()),float(j)/float(im.height()));
+            m_Objet.vertex( Point(i+1, 2.f*im(i+1, j).r, j) );
             
-            m_terrain.normal( terrainNormal(im, i, j) );
-            m_terrain.texcoord(float(i)/float(im.width()),float(j)/float(im.height()));
-            m_terrain.vertex( Point(i, 2.f*im(i, j).r, j) );
+            m_Objet.normal( terrainNormal(im, i, j) );
+            m_Objet.texcoord(float(i)/float(im.width()),float(j)/float(im.height()));
+            m_Objet.vertex( Point(i, 2.f*im(i, j).r, j) );
         }
-        m_terrain.restart_strip(); // Affichage en triangle_strip par bande
+        m_Objet.restart_strip(); // Affichage en triangle_strip par bande
     }
 }
 
@@ -100,51 +101,48 @@ int ViewerEtudiant::init()
     
 
     Point pmin, pmax;
+    // Appel des images qui serviront de texture et de modeler les objets
+    m_surface_Alti = read_image("data/terrain/final5.png");
+    m_surface_texture = read_texture(0, smart_path("data/terrain/final5.png"));
+    m_terrainAlti= read_image("data/terrain/terrain.png");
+    m_terrain_texture= read_texture(0,"data/terrain/terrain_texture.png");
+    m_texture_Decor=read_texture(0,"data/decor.png");
+
+    // Initialisations des objets 
     ViewerEtudiant:: init_cube_map_Decor();
-    m_terrainAlti = read_image("data/terrain/final5.png");
-    m_terrain_texture = read_texture(0, smart_path("data/terrain/final5.png"));
-    m_texture_Decor=read_image("data/terrain/final5.png");
-    ViewerEtudiant:: init_terrain(m_terrainAlti);
+    ViewerEtudiant:: init_terrain(m_surface_Alti, m_surface_Eau);
+    ViewerEtudiant:: init_terrain(m_terrainAlti, m_terrain);
     
-     m_camera.lookat( Point(2,5,3), 15 );
+    // Appel des programes shaders 
     m_program_Eau= read_program("data/shaders/surface_Eau.glsl");
+    m_program_Terrain= read_program("data/shaders/shadertoy.glsl");
+    m_program_decor= read_program("data/shaders/cube_map.glsl");
 
-    vertex_count=m_terrain.vertex_count();
+
+    vertex_count_eau=m_surface_Eau.vertex_count();
+    vertex_count_ter=m_terrain.vertex_count();
+    vertex_count_decor=m_cube_map_decor.vertex_count();
+    
     cout<<endl;
-    cout<<"vertex count : "<<vertex_count<<endl;
-    // vec3 positions [vertex_count];
+    cout<<"vertex count : "<<vertex_count_eau<<endl;
+    cout<<"vertex count : "<<vertex_count_ter<<endl;
+    cout<<"vertex count : "<<vertex_count_decor<<endl;
 
-    // glGenBuffers(1, &vertex_buffer);
-    // glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    // glBufferData(GL_ARRAY_BUFFER,
-    //     /* length */    sizeof(positions),
-    //     /* data */      positions,
-    //     /* usage */     GL_STATIC_DRAW);
-
+    // Initialisation des vertices 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
+    // affiche les erreurs du shader program
     program_print_errors(m_program_Eau);
-    
-    GLint attribute= glGetAttribLocation(m_program_Eau, "position");
-    if(attribute < 0)
-       { // gros probleme...
-       cout<< "oh non"<<endl;
-        return -1;}
+    program_print_errors(m_program_Terrain);
+    program_print_errors(m_program_decor);
 
-        glVertexAttribPointer(attribute, 3, GL_FLOAT,       // l'attribut est un vec3,
-        /* not normalized */    GL_FALSE,               // les valeurs ne sont pas normalisees entre 0, et 1
-        /* stride */            0,                      // les vec3 sont ranges les uns a la suite des autres
-        /* offset */            0);                     // et se trouvent au debut du buffer
-
-    glEnableVertexAttribArray(attribute);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    lightCol= vec3(1.0,1.0,1.0);//configuration de la lumiere
 
          // texcoord buffer
      glGenBuffers(1, &texcoord_buffer);
      glBindBuffer(GL_ARRAY_BUFFER, texcoord_buffer);
-     glBufferData(GL_ARRAY_BUFFER, m_terrain.texcoord_buffer_size(), m_terrain.texcoord_buffer(), GL_STATIC_DRAW);
+     glBufferData(GL_ARRAY_BUFFER, m_surface_Eau.texcoord_buffer_size(), m_surface_Eau.texcoord_buffer(), GL_STATIC_DRAW);
   
      // configurer l'attribut texcoord
      GLint texcoord= glGetAttribLocation(m_program_Eau, "texcoord");
@@ -152,27 +150,25 @@ int ViewerEtudiant::init()
          return -1;
      glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
      glEnableVertexAttribArray(texcoord);
-  
+    // configurer les samplers
     glGenSamplers(1, &sampler);
-  
-     glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-     glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-     glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-     glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-     glBindTexture(GL_TEXTURE_2D, 0);
-     glUseProgram(0);
+    glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     
         
-        // etat openGL par defaut
-        glClearColor(0.2f, 0.2f, 0.2f, 1.f);        // couleur par defaut de la fenetre
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-        
-        glClearDepth(1.f);                          // profondeur par defaut
-        glDepthFunc(GL_LESS);                       // ztest, conserver l'intersection la plus proche de la camera
-        glEnable(GL_DEPTH_TEST);  
-        glEnable( GL_BLEND ); 
+    // etat openGL par defaut
+    glClearColor(0.2f, 0.2f, 0.2f, 1.f);        // couleur par defaut de la fenetre
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    
+    glClearDepth(1.f);                          // profondeur par defaut
+    glDepthFunc(GL_LESS);                       // ztest, conserver l'intersection la plus proche de la camera
+    glEnable(GL_DEPTH_TEST);  
+    glEnable( GL_BLEND ); 
 
     
 
@@ -186,10 +182,13 @@ int ViewerEtudiant:: quit( )
     {
         // etape 3 : detruire le shader program
         release_program(m_program_Eau);
+        release_program(m_program_Terrain);
+        release_program(m_program_decor);
         glDeleteBuffers(1, &vertex_buffer);
         glDeleteVertexArrays(1, &vao);
+        m_surface_Eau.release();
         m_terrain.release();
-
+        m_cube_map_decor.release();
         glDeleteTextures(1, &m_texture);
         
         return 0;
@@ -206,58 +205,77 @@ int ViewerEtudiant::render()
     
     glBindVertexArray(vao);
 
-    glUseProgram(m_program_Eau);
+   
+    
    
     // configurer le shader program
     // . recuperer les transformations
-
-    
-    Transform model=  Scale(1,1.5,1)*Translation(-10,-1,-10);
+    Transform model=  Scale(0.9,2,0.9)*Translation(-15,-2,-15);
     Transform view= m_camera.view();
     Transform projection= m_camera.projection(window_width(), window_height(), 45);
     
     // . composer les transformations : model, view et projection
     Transform mvp= projection * view * model;
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_terrain_texture);
-    glBindSampler(0, sampler);
-
-//  
-
-// Initialiser le tableau positions avec les positions des sommets du cube
-
-
-    vec3 lightCol= vec3(1.0,1.0,1.0);
-    // . parametrer le shader program :
-    // . transformation : la matrice declaree dans le vertex shader s'appelle mvpMatrix
-    program_uniform(m_program_Eau, "mvpMatrix", mvp);
-    program_uniform(m_program_Eau, "model", model);
-    program_uniform(m_program_Eau, "view",view);
-    program_uniform(m_program_Eau,"time" , float(global_time()));
-    program_uniform(m_program_Eau,"scale", 2);
-    program_uniform(m_program_Eau,"frequency", float(rand()%30));
     
-   
-    //initialisation de l'uniforme position
-    // GLuint positionsLocation = glGetUniformLocation(m_program_Eau, "positions");
-    // glUniform3fv(positionsLocation, vertex_count, m_terrrain.vertex_buffer());
-    GLint location;
-    location= glGetUniformLocation(m_program_Eau, "terrain");
-    glUniform1i(location, 0);
+
+    
+    //  parametrer le shader program m_program_Eau
+    glUseProgram(m_program_Eau);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_surface_texture);
+    glBindSampler(0, sampler);
+    program_uniform(m_program_Eau, "mvpMatrix", mvp);
+    program_uniform(m_program_Eau, "view", view);
+    GLfloat time= glGetUniformLocation(m_program_Eau, "time");
+    glUniform1f(time, float(global_time()));
     GLuint poslight=glGetUniformLocation(m_program_Eau, "lightCol");
     glUniform3f(poslight,lightCol.x,lightCol.y,lightCol.z);
 
-
-    
-    // go !
-    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-    m_terrain.draw(m_program_Eau, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
-    glBindTexture(GL_TEXTURE_2D, 0);
-        
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count_eau);
+    m_surface_Eau.draw(m_program_Eau, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ true, /* use material index*/ false);
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glBindSampler(0, 0);
     glUseProgram(0);
     glBindVertexArray(0);
+
+    // parametrer le shader program m_program_Terrain
+    glUseProgram(m_program_Terrain);
+    model=Scale(0.5/4,5,0.5/4)*Translation(-100,-1,-100);
+    view= m_camera.view();
+    mvp=projection * view *model ;
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_terrain_texture);
+    glBindSampler(0, sampler);
+    program_uniform(m_program_Terrain, "mvpMatrix", mvp);
+    program_uniform(m_program_Terrain, "view", view);
+    poslight=glGetUniformLocation(m_program_Terrain, "lightCol");
+    glUniform3f(poslight,lightCol.x,lightCol.y,lightCol.z);
+
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count_ter);
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    m_terrain.draw(m_program_Terrain, /* use position */ true, /* use texcoord */ true, /* use normal */ true, /* use color */ false, /* use material index*/ false);
+    glBindSampler(0, 0);
+    glUseProgram(0);
+    glBindVertexArray(0);
+
+
+    // parametrer le shader program m_program_decor
+    glUseProgram(m_program_decor);
+    model=Scale(15,15,15)*Translation(0,0.5,0);
+    mvp=projection * view *model ;
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_texture_Decor);
+    glBindSampler(0, sampler);
+    program_uniform(m_program_decor, "mvpMatrix", mvp);
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count_decor);
+    m_cube_map_decor.draw(m_program_decor, /* use position */ true, /* use texcoord */ true, /* use normal */ false, /* use color */ false, /* use material index*/ false);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glBindSampler(0, 0);
+    glUseProgram(0);
+    glBindVertexArray(0);
+
+
     return 1;
     
 }

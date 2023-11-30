@@ -187,17 +187,17 @@ int Viewer::init()
     m_anim.init( smart_path("data/animation/anim1.ani") );
     
     
-    /// Camera et lumiere
-    m_camera.lookat( Point(0,0,0), 30 );
-    gl.light( Point(0, 2, 20), White() );
+    // /// Camera et lumiere
+     m_camera.lookat( Point(0,0,0), 30 );
+    // gl.light( Point(0, 2, 20), White() );
     //gl.light( Point(-2, 2, 2), White() );
     
     
     /// Appel des fonctions init_votreObjet pour creer les Mesh
     init_axe();
-    init_grid();
-    init_cube();
-    init_quad();
+    // init_grid();
+    // init_cube();
+    // init_quad();
     
     
     ///  Chargement des differentes textures des formes de base
@@ -330,16 +330,16 @@ void Viewer::manageCameraLight()
 
     // AXE et GRILLE
     gl.model( Identity() );
-    if (b_draw_grid) gl.draw(m_grid);
+    // if (b_draw_grid) gl.draw(m_grid);
     if (b_draw_axe) gl.draw(m_axe);
     if (b_draw_animation) m_anim.draw(m_camera);
 
      // LIGHT
     gl.texture( 0 );
-    gl.lighting(false);
+    // gl.lighting(false);
     gl.model( Translation( Vector( gl.light()))*Scale(0.3, 0.3, 0.3) );
-    gl.draw(m_cube);
-    gl.lighting(true);
+    // gl.draw(m_cube);
+    // gl.lighting(true);
 }
 
 

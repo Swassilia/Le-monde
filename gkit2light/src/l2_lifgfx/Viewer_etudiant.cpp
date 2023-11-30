@@ -115,7 +115,7 @@ int ViewerEtudiant::init()
     
     // Appel des programes shaders 
     m_program_Eau= read_program("data/shaders/surface_Eau.glsl");
-    m_program_Terrain= read_program("data/shaders/shadertoy.glsl");
+    m_program_Terrain= read_program("data/shaders/terrain.glsl");
     m_program_decor= read_program("data/shaders/cube_map.glsl");
 
 
@@ -210,7 +210,7 @@ int ViewerEtudiant::render()
    
     // configurer le shader program
     // . recuperer les transformations
-    Transform model=  Scale(0.9,2,0.9)*Translation(-15,-2,-15);
+    Transform model=  Scale(1.2,2,1.2)*Translation(-15,-3.5,-15);
     Transform view= m_camera.view();
     Transform projection= m_camera.projection(window_width(), window_height(), 45);
     
@@ -240,7 +240,7 @@ int ViewerEtudiant::render()
 
     // parametrer le shader program m_program_Terrain
     glUseProgram(m_program_Terrain);
-    model=Scale(0.5/4,5,0.5/4)*Translation(-100,-1,-100);
+    model=Scale(0.5/3,6,0.5/3)*Translation(-100,-1.5,-100);
     view= m_camera.view();
     mvp=projection * view *model ;
     glActiveTexture(GL_TEXTURE0);
@@ -261,7 +261,7 @@ int ViewerEtudiant::render()
 
     // parametrer le shader program m_program_decor
     glUseProgram(m_program_decor);
-    model=Scale(15,15,15)*Translation(0,0.5,0);
+    model=Scale(16,16,16)*Translation(0,0.5,0);
     mvp=projection * view *model ;
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture_Decor);
@@ -291,7 +291,6 @@ int ViewerEtudiant::update( const float time, const float delta )
 {
     // time est le temps ecoule depuis le demarrage de l'application, en millisecondes,
     // delta est le temps ecoule depuis l'affichage de la derniere image / le dernier appel a draw(), en millisecondes.
-    // m_camera.read_orbiter("data/animation/anim.ani");
     // m_camera.rotation(3, 0);// rotation de la camera comme sur une sphere
     
     

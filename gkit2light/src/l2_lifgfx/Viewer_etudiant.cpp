@@ -179,12 +179,14 @@ int ViewerEtudiant:: quit( )
         release_program(m_program_Eau);
         release_program(m_program_Terrain);
         release_program(m_program_decor);
-        glDeleteBuffers(1, &vertex_buffer);
         glDeleteVertexArrays(1, &vao);
         m_surface_Eau.release();
         m_terrain.release();
         m_cube_map_decor.release();
-        glDeleteTextures(1, &m_texture);
+        glDeleteTextures(1, &m_texture_Decor);
+        glDeleteTextures(1, &m_terrain_texture);        
+        glDeleteTextures(1, &m_texture_Decor);
+
         
         return 0;
     }

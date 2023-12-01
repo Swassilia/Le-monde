@@ -18,9 +18,7 @@ public:
 
 protected:
     GLuint vao;
-    Image m_terrainAlti;
-    
-    Mesh m_terrain;
+    GLuint  sampler;
     vec3 lightCol;//couleur de la lumiere
     
 
@@ -32,21 +30,18 @@ protected:
     Mesh m_surface_Eau;
     Image m_surface_Alti;
     GLuint m_surface_texture;
-
     GLuint m_program_Eau;
 
 
     //terrain
     void init_terrain(const Image& im,Mesh &m_terrain);
+    Image m_terrainAlti;
     GLuint m_terrain_texture;
     GLuint m_program_Terrain;
     GLuint m_texture;
-    GLuint vertex_buffer;
-    GLuint texcoord_buffer;
+    Mesh m_terrain;
 
-    GLuint  sampler;
-    GLuint sampler_decor;
-    GLuint sampler_eau;
+
     //decor
     void init_cube_map_Decor();
     Mesh m_cube_map_decor;

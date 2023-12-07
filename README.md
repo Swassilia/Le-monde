@@ -55,6 +55,7 @@ Le répertoire build contient le makefile pour compiler le projet.
 Le répertoire premake qui permet la compilation.
 
 --CODE--
+
 La classe Viewer_etudiant dans Viewer_etudiant.cpp sert à la modélisation de l'objet et l'initialisation des uniformes (variable utilisé dans le programme shader) . 
 Dans un premier temps nous écrivons une fonction qui paramètre le Mesh: normal , vertex et coordonnées de texture. Cette fonction sera appelée dans ```init();``` dans la quelle on préparera également les images, la texture et les programmes shader que nous utiliserons. 
 Par la suite nous irons dans ```Draw();```  pour paramètrer les uniformes ainsi que le nombre de vertex et le dessine avec ```Nom_Mesh.draw(m_nom_programme, bool position, bool texcoo, bool normal, bool couleur) ;``` . Nous déciderons ici si nous utiliserons la position, la texture...
@@ -62,3 +63,5 @@ Par la suite nous irons dans ```Draw();```  pour paramètrer les uniformes ainsi
 Le Shader Surface_Eau.glsl dans data/shaders sert a l'affichage de notre objet dans le monde.
 Dans le bloc vertex shader nous utilisons la position et la Matrice Modele \* vue \* projection qui nous permet l'affichage en fonction de la fenetre et de la camera. C'est dans ce bloc que nous pouvons mettre en movement les vertex.
 Dans le bloc fragment shader, nous gerons la reaction a la lumiere, la couleur et la texture de notre objet. 
+
+La classe Image dans tools/Image permet la génération de 9 images pour l'initialisation d'un Terrain ou de l'eau et permet de généré des images avec des formes. La classe possède une concaténation d'image et une interpolation pour aggrandir les images.

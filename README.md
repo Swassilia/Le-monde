@@ -3,6 +3,10 @@ P2100663 Wassila SAID KARIM 'projet Manager'
 P2004503 Nessim MECHICHE 'Executer'
 
 
+--OBJECTIF--
+
+Modélisation, Rendu, Animation de nuages ou de la surface de l'eau
+
 --RESULTAT--
 
 Le projet Le monde (AM5) sert à faire une modélisation 3d dans une fenêtre d'ile(s) au millieu d'un ocean, généré à partir d'image 2d de bruit de Perlin. On peut se déplacer pour visualiser cette modélisation.

@@ -1,6 +1,6 @@
 Eikon Crafters
-P2100663 Wassila SAID KARIM 'chef de projet'
-P2004503 Nessim MECHICHE 'chien de projet'
+P2100663 Wassila SAID KARIM 'projet Manager'
+P2004503 Nessim MECHICHE 'Executer'
 
 
 Le projet Le monde (AM5) sert à faire une modélisation 3d dans une fenêtre d'ile(s) au millieu d'un ocean, généré à partir d'image 2d de bruit de Perlin. On peut se déplacer pour visualiser cette modélisation.

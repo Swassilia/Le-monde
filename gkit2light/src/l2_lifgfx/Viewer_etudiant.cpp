@@ -273,10 +273,7 @@ int ViewerEtudiant::render()
     return 1;
     
 }
- void ViewerEtudiant::update_Nuage(float time)
-{
-    m_camera.lookat(Point(0,cos(time*200)/50,0), 15);
-}
+
 
 /*
  * Fonction dans laquelle les mises a jours sont effectuees.

@@ -7,16 +7,16 @@ P2004503 Nessim MECHICHE 'Executer'
 
 Le projet Le monde (AM5) sert à faire une modélisation 3d dans une fenêtre d'ile(s) au millieu d'un ocean, généré à partir d'image 2d de bruit de Perlin. On peut se déplacer pour visualiser cette modélisation.
 
-Le code est écrit en C++/C et en version 3.30 du language GLSL.
-Il se compile sous Linux. 
-Utilise GLSL comme librairie graphique.
-
 --COMMANDE POUR LA CAMERA--
 
 Pour se déplacer nous pouvons utilisé les flèches du clavier et la souris.
 Nous pouvons également n'afficher que les vertex sans les faces en utilisant "w".
 
 --COMMENT COMPILER LE PROJET--
+
+Le code est écrit en C++/C et en version 3.30 du language GLSL.
+Il se compile sous Linux. 
+Utilise GLSL comme librairie graphique.
 
 Generer les images : 
 

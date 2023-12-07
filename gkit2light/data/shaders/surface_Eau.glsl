@@ -16,8 +16,7 @@ void main()
     vec4 pos = vec4(position, 1);
     intexcoord = texcoord;
     float timePeriod = mod(time,10000000);
-    pos = pos + vec4(0, min(sin(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))), 
-    cos(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))) )/7, 0, 0);
+    pos = pos + vec4(0, min(sin(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))), cos(3.14*(texcoord.y+0.01)* 2.0 * (timePeriod/(600*3.14))) )/5, 0, 0);
     gl_Position = mvpMatrix * pos;
     FragPos = vec3(0, 5, 0);
     inormal = normal;

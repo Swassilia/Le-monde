@@ -3,48 +3,53 @@ P2100663 Wassila SAID KARIM 'projet Manager'
 P2004503 Nessim MECHICHE 'Executer'
 
 
---OBJECTIF--
+## OBJECTIF
 
 Modélisation, Rendu, Animation de nuages ou de la surface de l'eau
 
---RESULTAT--
+## RESULTAT
 
 Le projet Le monde (AM5) sert à faire une modélisation 3d dans une fenêtre d'ile(s) au millieu d'un ocean, généré à partir d'image 2d de bruit de Perlin. On peut se déplacer pour visualiser cette modélisation.
 
---COMMANDE POUR LA CAMERA--
+## COMMANDE POUR LA CAMERA
 
 Pour se déplacer nous pouvons utilisé les flèches du clavier et la souris.
 Nous pouvons également n'afficher que les vertex sans les faces en utilisant "w".
 
---COMMENT COMPILER LE PROJET--
+## COMMENT COMPILER LE PROJET
 
 Le code est écrit en C++/C et en version 3.30 du language GLSL.
 Il se compile sous Linux. 
 Utilise GLSL comme librairie graphique.
 
-Generer les images : 
 
-( être dans eikon-crafters/gkit2light/tools/images )
+
+Cloner le projet
+```bash
+git clone https://github.com/Swassilia/Le-monde.git
+````
+Génerer les images : 
+```bash
+cd eikon-crafters/gkit2light/tools/images 
 
 mkdir -p obj
 mkdir -p bin
 
 make bruit
 bin/bruit
-
+````
 
 Compilation du projet : 
-
-( être dans eikon-crafters/gkit2light/build )
-
+```bash
+cd ../../build
 make
 
-(être dans eikon-crafters/gkit2light )
+cd ..
 
 bin/l2_lifgfx
+````
 
-
---ORGANISATION DES FICHIERS-- 
+## CORGANISATION DES FICHIERS
 
 Le répertoire src contient les fichier important de .cpp et .h pour la modélisation et la mise en place du programme.
 
@@ -58,7 +63,7 @@ Le répertoire build contient le makefile pour compiler le projet.
 
 Le répertoire premake qui permet la compilation.
 
---CODE--
+## CODE
 
 La classe Viewer_etudiant dans Viewer_etudiant.cpp sert à la modélisation de l'objet et l'initialisation des uniformes (variable utilisé dans le programme shader) . 
 Dans un premier temps nous écrivons une fonction qui paramètre le Mesh: normal , vertex et coordonnées de texture. Cette fonction sera appelée dans ```init();``` dans la quelle on préparera également les images, la texture et les programmes shader que nous utiliserons. 
